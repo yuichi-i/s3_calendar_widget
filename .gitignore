@@ -58,4 +58,7 @@ ios/Podfile.lock
 *.xcodeproj/project.xcworkspace/xcuserdata/
 DerivedData/
 
+# Copilot Instructions（個人設定のためコミット不要）
+.github/copilot-instructions.md
+
 

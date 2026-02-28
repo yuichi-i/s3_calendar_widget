@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
@@ -7,162 +7,183 @@
     android:background="@android:color/transparent"
     android:padding="4dp">
 
-    <!-- 月ヘッダー -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/tv_month_year"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="2026年 2月"
-            android:textColor="#FFFFFFFF"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:paddingStart="4dp"
-            android:paddingBottom="3dp" />
+    <!-- Month header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:id="@+id/tv_month_year" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="" android:textColor="#FFFFFFFF" android:textSize="13sp" android:textStyle="bold" android:paddingStart="4dp" android:paddingBottom="3dp" />
     </LinearLayout>
 
-    <!-- 曜日ヘッダー行（上下パディングで間隔確保） -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="3dp"
-        android:paddingBottom="3dp">
-
-        <TextView android:id="@+id/tv_dow0" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="日"
-            android:textColor="#FFFF4444" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow1" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="月"
-            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow2" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="火"
-            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow3" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="水"
-            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow4" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="木"
-            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow5" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="金"
-            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
-        <TextView android:id="@+id/tv_dow6" android:layout_width="0dp"
-            android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="土"
-            android:textColor="#FF4488FF" android:textSize="9sp" android:textStyle="bold"/>
+    <!-- Day-of-week header -->
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingTop="3dp" android:paddingBottom="3dp">
+        <TextView android:id="@+id/tv_dow0" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFF4444" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="" android:textColor="#FF4488FF" android:textSize="9sp" android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- 区切り線 -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#33FFFFFF"
-        android:text="" />
+    <!-- Divider -->
+    <TextView android:layout_width="match_parent" android:layout_height="1dp" android:background="#33FFFFFF" android:text="" />
 
-    <!-- カレンダーグリッド（5行 x 7列 = 35セル） -->
-    <!-- 行1 -->
-    <LinearLayout android:id="@+id/row0" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-        <TextView android:id="@+id/day_0_0" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_0_1" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_0_2" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_0_3" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_0_4" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_0_5" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
-        <TextView android:id="@+id/day_0_6" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    <!-- Row 0 -->
+    <LinearLayout android:id="@+id/row0" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_0_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_0_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
     </LinearLayout>
-    <!-- 行2 -->
-    <LinearLayout android:id="@+id/row1" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-        <TextView android:id="@+id/day_1_0" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
-        <TextView android:id="@+id/day_1_1" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_1_2" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_1_3" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_1_4" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_1_5" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
-        <TextView android:id="@+id/day_1_6" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+
+    <!-- Row 1 -->
+    <LinearLayout android:id="@+id/row1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_1_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_1_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
     </LinearLayout>
-    <!-- 行3 -->
-    <LinearLayout android:id="@+id/row2" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-        <TextView android:id="@+id/day_2_0" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
-        <TextView android:id="@+id/day_2_1" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_2_2" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_2_3" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_2_4" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_2_5" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
-        <TextView android:id="@+id/day_2_6" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+
+    <!-- Row 2 -->
+    <LinearLayout android:id="@+id/row2" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_2_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_2_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
     </LinearLayout>
-    <!-- 行4 -->
-    <LinearLayout android:id="@+id/row3" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-        <TextView android:id="@+id/day_3_0" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
-        <TextView android:id="@+id/day_3_1" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_3_2" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_3_3" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_3_4" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_3_5" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
-        <TextView android:id="@+id/day_3_6" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+
+    <!-- Row 3 -->
+    <LinearLayout android:id="@+id/row3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_3_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_3_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
     </LinearLayout>
-    <!-- 行5 -->
-    <LinearLayout android:id="@+id/row4" android:layout_width="match_parent"
-        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
-        <TextView android:id="@+id/day_4_0" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
-        <TextView android:id="@+id/day_4_1" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_4_2" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_4_3" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_4_4" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
-        <TextView android:id="@+id/day_4_5" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
-        <TextView android:id="@+id/day_4_6" android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:gravity="center" android:textSize="14sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+
+    <!-- Row 4 -->
+    <LinearLayout android:id="@+id/row4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        </FrameLayout>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
+            <ImageView android:id="@+id/bg_4_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <TextView android:id="@+id/day_4_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        </FrameLayout>
     </LinearLayout>
 
 </LinearLayout>
-

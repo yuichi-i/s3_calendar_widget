@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../models/calendar_cell.dart';
 
 class DayCellWidget extends StatelessWidget {
@@ -9,7 +8,7 @@ class DayCellWidget extends StatelessWidget {
   const DayCellWidget({
     super.key,
     required this.cell,
-    this.fontSize = 13,
+    this.fontSize = 14,
   });
 
   @override
@@ -30,7 +29,8 @@ class DayCellWidget extends StatelessWidget {
       child: Center(
         child: Text(
           cell.date!.day.toString(),
-          style: GoogleFonts.rajdhani(
+          style: TextStyle(
+            fontFamily: 'serif',
             fontSize: fontSize,
             fontWeight: FontWeight.w700,
             fontStyle: FontStyle.italic,

@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"
@@ -33,6 +36,16 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/calendar_widget_info" />
+        </receiver>
+
+        <!-- 日付変更時の自動更新レシーバー -->
+        <receiver
+            android:name=".DateChangedReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.example.s3_calendar_widget.ACTION_MIDNIGHT_UPDATE" />
+            </intent-filter>
         </receiver>
 
         <!-- Don't delete the meta-data below.

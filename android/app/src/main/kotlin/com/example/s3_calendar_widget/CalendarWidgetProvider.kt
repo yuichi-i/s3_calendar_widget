@@ -27,9 +27,16 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             try { updateWidget(context, appWidgetManager, appWidgetId) }
             catch (e: Exception) { Log.e(TAG, "onUpdate failed", e) }
         }
+        // ウィジェット更新のたびに翌日0時のアラームを再スケジュール
+        DateChangedReceiver.scheduleNextMidnightAlarm(context)
     }
 
-    override fun onEnabled(context: Context) { super.onEnabled(context); Log.d(TAG, "onEnabled") }
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        Log.d(TAG, "onEnabled")
+        // ウィジェット初回追加時にミッドナイトアラームをスケジュール
+        DateChangedReceiver.scheduleNextMidnightAlarm(context)
+    }
 
     companion object {
         private const val TAG = "CalendarWidget"

@@ -7,7 +7,7 @@
     android:background="#FF000000"
     android:padding="4dp">
 
-    <!-- 月�EチE��ー -->
+    <!-- 月ヘッダー -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="2026年 2朁E
+            android:text="2026年 2月"
             android:textColor="#FFFFFFFF"
             android:textSize="12sp"
             android:textStyle="bold"
@@ -27,7 +27,7 @@
             android:paddingBottom="3dp" />
     </LinearLayout>
 
-    <!-- 曜日ヘッダー衁E-->
+    <!-- 曜日ヘッダー行 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:textColor="#FFFF4444" android:textSize="9sp" android:textStyle="bold"/>
         <TextView android:id="@+id/tv_dow1" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="朁E
+            android:gravity="center" android:text="月"
             android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
         <TextView android:id="@+id/tv_dow2" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
@@ -57,147 +57,146 @@
             android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
         <TextView android:id="@+id/tv_dow5" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="釁E
+            android:gravity="center" android:text="金"
             android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
         <TextView android:id="@+id/tv_dow6" android:layout_width="0dp"
             android:layout_height="wrap_content" android:layout_weight="1"
-            android:gravity="center" android:text="圁E
+            android:gravity="center" android:text="土"
             android:textColor="#FF4488FF" android:textSize="9sp" android:textStyle="bold"/>
     </LinearLayout>
 
-    <!-- 区刁E��緁E-->
+    <!-- 区切り線 -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#33FFFFFF"
         android:text="" />
 
-    <!-- カレンダーグリチE���E�E行ÁE列！E-->
-    <!-- 2026年2朁E 1日=日曁E 28日まで -->
-    <!-- 衁E: 1(日)、E(圁E -->
+    <!-- カレンダーグリッド（2026年2月: 1日=日曜、28日まで） -->
+    <!-- 行1: 1(日)〜7(土) -->
     <LinearLayout android:id="@+id/row0" android:layout_width="match_parent"
         android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/day_0_0" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="1"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_0_1" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="2"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_0_2" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="3"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_0_3" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="4"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_0_4" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="5"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_0_5" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="6"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_0_6" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="7"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
     </LinearLayout>
-    <!-- 衁E: 8(日)、E4(圁E 11=建国記念日(赤) -->
+    <!-- 行2: 8(日)〜14(土) 11=建国記念日(赤) -->
     <LinearLayout android:id="@+id/row1" android:layout_width="match_parent"
         android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/day_1_0" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="8"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_1_1" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="9"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_1_2" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="10"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_1_3" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="11"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_1_4" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="12"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_1_5" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="13"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_1_6" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="14"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
     </LinearLayout>
-    <!-- 衁E: 15(日)、E1(圁E -->
+    <!-- 行3: 15(日)〜21(土) -->
     <LinearLayout android:id="@+id/row2" android:layout_width="match_parent"
         android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/day_2_0" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="15"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_2_1" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="16"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_2_2" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="17"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_2_3" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="18"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_2_4" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="19"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_2_5" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="20"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_2_6" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="21"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
     </LinearLayout>
-    <!-- 衁E: 22(日)、E8(圁E 23=天皁E��生日(赤) -->
+    <!-- 行4: 22(日)〜28(土) 23=天皇誕生日(赤) -->
     <LinearLayout android:id="@+id/row3" android:layout_width="match_parent"
         android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/day_3_0" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="22"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_3_1" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="23"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFF4444"/>
         <TextView android:id="@+id/day_3_2" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="24"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_3_3" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="25"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_3_4" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="26"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_3_5" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="27"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FFFFFFFF"/>
         <TextView android:id="@+id/day_3_6" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="28"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#FF4488FF"/>
     </LinearLayout>
-    <!-- 衁E: 翌月3/1(日)、E/7(圁E�E�薄色�E�E-->
+    <!-- 行5: 翌月3/1(日)〜3/7(土) 薄色 -->
     <LinearLayout android:id="@+id/row4" android:layout_width="match_parent"
         android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
         <TextView android:id="@+id/day_4_0" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="1"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FF4444"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FF4444"/>
         <TextView android:id="@+id/day_4_1" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="2"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
         <TextView android:id="@+id/day_4_2" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="3"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
         <TextView android:id="@+id/day_4_3" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="4"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
         <TextView android:id="@+id/day_4_4" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="5"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
         <TextView android:id="@+id/day_4_5" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="6"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#66FFFFFF"/>
         <TextView android:id="@+id/day_4_6" android:layout_width="0dp" android:layout_height="match_parent"
             android:layout_weight="1" android:gravity="center" android:text="7"
-            android:textSize="13sp" android:textStyle="italic|bold" android:textColor="#664488FF"/>
+            android:textSize="14sp" android:textStyle="italic|bold" android:textColor="#664488FF"/>
     </LinearLayout>
 
 </LinearLayout>

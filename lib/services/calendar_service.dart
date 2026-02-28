@@ -1,0 +1,91 @@
+import '../models/calendar_cell.dart';
+import '../models/holiday.dart';
+
+class CalendarService {
+  /// 指定月のカレンダーセルリストを生成する（常に5行×7列=35セル）
+  /// 先頭・末尾は前月・次月の日付で埋める
+  List<CalendarCell> buildMonthCells({
+    required int year,
+    required int month,
+    required bool startOnMonday,
+    required Map<String, Holiday> holidays,
+  }) {
+    final List<CalendarCell> cells = [];
+
+    final firstDay = DateTime(year, month, 1);
+    final lastDay = DateTime(year, month + 1, 0);
+
+    // 先頭オフセット（前月の残り日数）
+    int firstWeekday = firstDay.weekday; // 1=月, 7=日
+    int offset;
+    if (startOnMonday) {
+      offset = firstWeekday - 1;
+    } else {
+      offset = firstWeekday % 7;
+    }
+
+    // 前月の日付でオフセットを埋める
+    if (offset > 0) {
+      final prevMonthLast = DateTime(year, month, 0); // 前月末日
+      for (int i = offset - 1; i >= 0; i--) {
+        final date = DateTime(prevMonthLast.year, prevMonthLast.month,
+            prevMonthLast.day - i);
+        cells.add(CalendarCell(
+          date: date,
+          dayType: _dayType(date, {}),
+          isAdjacentMonth: true,
+        ));
+      }
+    }
+
+    // 当月の日付
+    for (int day = 1; day <= lastDay.day; day++) {
+      final date = DateTime(year, month, day);
+      final dateKey = _dateKey(date);
+      final holiday = holidays[dateKey];
+      DayType dayType;
+      if (holiday != null) {
+        dayType = DayType.holiday;
+      } else {
+        dayType = _dayType(date, {});
+      }
+      cells.add(CalendarCell(
+        date: date,
+        dayType: dayType,
+        holidayName: holiday?.name,
+        isAdjacentMonth: false,
+      ));
+    }
+
+    // 次月の日付で末尾を埋めて35セル（5行×7列）にする
+    int nextDay = 1;
+    while (cells.length < 35) {
+      final date = DateTime(year, month + 1, nextDay++);
+      cells.add(CalendarCell(
+        date: date,
+        dayType: _dayType(date, {}),
+        isAdjacentMonth: true,
+      ));
+    }
+
+    return cells;
+  }
+
+  DayType _dayType(DateTime date, Map<String, Holiday> holidays) {
+    if (date.weekday == DateTime.sunday) return DayType.sunday;
+    if (date.weekday == DateTime.saturday) return DayType.saturday;
+    return DayType.weekday;
+  }
+
+  String _dateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+
+  List<String> getWeekdayHeaders(bool startOnMonday) {
+    if (startOnMonday) {
+      return ['月', '火', '水', '木', '金', '土', '日'];
+    } else {
+      return ['日', '月', '火', '水', '木', '金', '土'];
+    }
+  }
+}
+

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF000000"
+    android:padding="4dp">
+
+    <!-- 月ヘッダー -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tv_month_year"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="2026年 2月"
+            android:textColor="#FFFFFFFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:paddingStart="4dp"
+            android:paddingBottom="3dp" />
+    </LinearLayout>
+
+    <!-- 曜日ヘッダー行（上下パディングで間隔確保） -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp">
+
+        <TextView android:id="@+id/tv_dow0" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="日"
+            android:textColor="#FFFF4444" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow1" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="月"
+            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow2" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="火"
+            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow3" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="水"
+            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow4" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="木"
+            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow5" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="金"
+            android:textColor="#FFFFFFFF" android:textSize="9sp" android:textStyle="bold"/>
+        <TextView android:id="@+id/tv_dow6" android:layout_width="0dp"
+            android:layout_height="wrap_content" android:layout_weight="1"
+            android:gravity="center" android:text="土"
+            android:textColor="#FF4488FF" android:textSize="9sp" android:textStyle="bold"/>
+    </LinearLayout>
+
+    <!-- 区切り線 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#33FFFFFF"
+        android:text="" />
+
+    <!-- カレンダーグリッド（5行 × 7列 = 35セル） -->
+    <!-- 行1 -->
+    <LinearLayout android:id="@+id/row0" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/day_0_0" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_0_1" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_0_2" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_0_3" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_0_4" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_0_5" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        <TextView android:id="@+id/day_0_6" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    </LinearLayout>
+    <!-- 行2 -->
+    <LinearLayout android:id="@+id/row1" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/day_1_0" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        <TextView android:id="@+id/day_1_1" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_1_2" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_1_3" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_1_4" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_1_5" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        <TextView android:id="@+id/day_1_6" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    </LinearLayout>
+    <!-- 行3 -->
+    <LinearLayout android:id="@+id/row2" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/day_2_0" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        <TextView android:id="@+id/day_2_1" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_2_2" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_2_3" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_2_4" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_2_5" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        <TextView android:id="@+id/day_2_6" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    </LinearLayout>
+    <!-- 行4 -->
+    <LinearLayout android:id="@+id/row3" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/day_3_0" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        <TextView android:id="@+id/day_3_1" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_3_2" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_3_3" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_3_4" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_3_5" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        <TextView android:id="@+id/day_3_6" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    </LinearLayout>
+    <!-- 行5 -->
+    <LinearLayout android:id="@+id/row4" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal">
+        <TextView android:id="@+id/day_4_0" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+        <TextView android:id="@+id/day_4_1" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_4_2" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_4_3" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_4_4" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
+        <TextView android:id="@+id/day_4_5" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
+        <TextView android:id="@+id/day_4_6" android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:gravity="center" android:textSize="18sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
+    </LinearLayout>
+
+</LinearLayout>
+

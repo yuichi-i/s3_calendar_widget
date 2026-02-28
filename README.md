@@ -15,7 +15,7 @@ Flutter で作成されており、日本の祝日を自動取得して色分け
 ### ホーム画面ウィジェット
 - Android ホーム画面に今月のカレンダーウィジェットを配置可能（横3×縦2セル）
 - アプリ起動・設定変更時に自動でウィジェットデータを更新
-- **本日の日付を白丸でハイライト表示**（土曜=青、日曜・祝日=赤、平日=黒文字）
+- **本日の日付を半透明グレーの丸でハイライト表示**（土曜=青、日曜・祝日=赤、平日=黒文字）
 
 ### 祝日対応
 - [holidays-jp.github.io](https://holidays-jp.github.io/api/v1/) から日本の祝日データを自動取得
@@ -36,7 +36,7 @@ Flutter で作成されており、日本の祝日を自動取得して色分け
 
 ### デザイン
 - ダークテーマ固定（背景色: 黒）
-- [Rajdhani](https://fonts.google.com/specimen/Rajdhani) フォント（Google Fonts）
+- セリフ体イタリックフォント（Android 標準 serif）
 
 ---
 
@@ -57,7 +57,6 @@ Flutter で作成されており、日本の祝日を自動取得して色分け
 | `home_widget` | ホーム画面ウィジェットの更新・データ連携 |
 | `provider` | 状態管理 |
 | `shared_preferences` | 設定・祝日キャッシュの永続化 |
-| `google_fonts` | Rajdhani フォントの適用 |
 | `http` | 祝日 API の取得 |
 | `flutter_colorpicker` | ウィジェット背景色の選択 UI |
 

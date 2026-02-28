@@ -84,6 +84,20 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val dowHeadersJson   = prefs.getString(KEY_DOW_HEADERS, null)
             val holidayDatesJson = prefs.getString(KEY_HOLIDAY_DATES, null)
 
+            // Estimate cell height from actual widget height
+            val opts = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val widgetHeightDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
+                .takeIf { it > 0 }
+                ?: opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 120)
+            val density = context.resources.displayMetrics.density
+            val widgetHeightPx = (widgetHeightDp * density).toInt()
+            // Subtract estimated header area (~40dp) then divide by 5 rows
+            val headerPx = (40 * density).toInt()
+            val cellHeightPx = ((widgetHeightPx - headerPx) / 5).coerceAtLeast((16 * density).toInt())
+            val circleSizePx = (cellHeightPx * 0.92f).toInt() // ~92% of cell height, leaving small margin
+
+            val circleBitmap = createCircleBitmap(circleSizePx)
+
             val views = RemoteViews(context.packageName, R.layout.calendar_widget)
             views.setColorInt(R.id.widget_root, "setBackgroundColor", bgColorInt, bgColorInt)
 
@@ -98,41 +112,38 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
             val holidaySet = parseHolidayDates(holidayDatesJson)
             if (calendarDataJson != null) {
-                try { renderFromJson(context, views, calendarDataJson, dowHeadersJson, startOnMonday, holidaySet) }
-                catch (e: Exception) { Log.w(TAG, "renderFromJson failed", e); renderCurrentMonth(context, views, startOnMonday, holidaySet) }
+                try { renderFromJson(context, views, calendarDataJson, dowHeadersJson, startOnMonday, holidaySet, circleBitmap) }
+                catch (e: Exception) { Log.w(TAG, "renderFromJson failed", e); renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap) }
             } else {
-                renderCurrentMonth(context, views, startOnMonday, holidaySet)
+                renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap)
             }
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
 
         /**
-         * Create a circle bitmap programmatically — guaranteed to be a
-         * perfect circle on every device regardless of OEM RemoteViews quirks.
+         * Create a perfect circle bitmap at the given pixel size.
          */
-        private fun createCircleBitmap(context: Context, sizeDp: Float): Bitmap {
-            val density = context.resources.displayMetrics.density
-            val sizePx = (sizeDp * density).toInt()
-            val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
+        private fun createCircleBitmap(sizePx: Int): Bitmap {
+            val bmp = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bmp)
             val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.parseColor("#3DFFFFFF")
+                color = Color.parseColor("#80FFFFFF")
                 style = Paint.Style.FILL
             }
-            val radius = sizePx / 2f
-            canvas.drawCircle(radius, radius, radius, paint)
-            return bitmap
+            val r = sizePx / 2f
+            canvas.drawCircle(r, r, r, paint)
+            return bmp
         }
 
         /**
-         * Today mark: show/hide the background ImageView and set a circle bitmap.
-         * The ImageView is a fixed 20dp×20dp square centered in the FrameLayout,
-         * so the circle is always perfectly round regardless of cell dimensions.
+         * Today mark: show/hide the background ImageView.
+         * The ImageView is match_parent×match_parent; the bitmap is sized to
+         * exactly fill the cell so no scaling is needed.
          */
-        private fun setTodayMark(context: Context, views: RemoteViews, bgViewId: Int, isToday: Boolean) {
+        private fun setTodayMark(views: RemoteViews, bgViewId: Int, isToday: Boolean, circleBitmap: Bitmap) {
             if (isToday) {
                 views.setViewVisibility(bgViewId, View.VISIBLE)
-                views.setImageViewBitmap(bgViewId, createCircleBitmap(context, 16f))
+                views.setImageViewBitmap(bgViewId, circleBitmap)
             } else {
                 views.setViewVisibility(bgViewId, View.GONE)
             }
@@ -140,7 +151,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
         private fun renderFromJson(
             context: Context, views: RemoteViews, calendarDataJson: String, dowHeadersJson: String?,
-            startOnMonday: Boolean, holidaySet: Set<String>
+            startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap
         ) {
             val dataArray = JSONArray(calendarDataJson)
             views.setTextViewText(R.id.tv_month_year, extractMonthYear(dataArray))
@@ -178,15 +189,15 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                     }
                     views.setTextViewText(viewId, dayText)
                     views.setTextColor(viewId, if (isToday) todayTextColor else resolveColor(effectiveColorType, isAdjacent))
-                    setTodayMark(context, views, bgViewId, isToday)
+                    setTodayMark(views, bgViewId, isToday, circleBitmap)
                 } else {
                     views.setTextViewText(viewId, "")
-                    setTodayMark(context, views, bgViewId, false)
+                    setTodayMark(views, bgViewId, false, circleBitmap)
                 }
             }
         }
 
-        private fun renderCurrentMonth(context: Context, views: RemoteViews, startOnMonday: Boolean, holidaySet: Set<String>) {
+        private fun renderCurrentMonth(context: Context, views: RemoteViews, startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap) {
             val cal     = Calendar.getInstance()
             val year    = cal.get(Calendar.YEAR)
             val month   = cal.get(Calendar.MONTH)
@@ -215,7 +226,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         val dow = getDayOfWeek(prevCal.get(Calendar.YEAR), prevCal.get(Calendar.MONTH), prevDay)
                         views.setTextViewText(viewId, prevDay.toString())
                         views.setTextColor(viewId, dimColorForDow(dow))
-                        setTodayMark(context, views, bgViewId, false)
+                        setTodayMark(views, bgViewId, false, circleBitmap)
                     }
                     currentDay <= daysInMonth -> {
                         val dow      = getDayOfWeek(year, month, currentDay)
@@ -231,14 +242,14 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         }
                         views.setTextViewText(viewId, currentDay.toString())
                         views.setTextColor(viewId, if (isToday) todayTextColor else normalColor)
-                        setTodayMark(context, views, bgViewId, isToday)
+                        setTodayMark(views, bgViewId, isToday, circleBitmap)
                         currentDay++
                     }
                     else -> {
                         val dow = getDayOfWeek(year, month + 1, nextDay)
                         views.setTextViewText(viewId, nextDay.toString())
                         views.setTextColor(viewId, dimColorForDow(dow))
-                        setTodayMark(context, views, bgViewId, false)
+                        setTodayMark(views, bgViewId, false, circleBitmap)
                         nextDay++
                     }
                 }

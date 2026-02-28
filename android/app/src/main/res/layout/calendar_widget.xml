@@ -29,31 +29,31 @@
     <!-- Row 0 -->
     <LinearLayout android:id="@+id/row0" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_5" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_0_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_0_6" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_0_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
     </LinearLayout>
@@ -61,31 +61,31 @@
     <!-- Row 1 -->
     <LinearLayout android:id="@+id/row1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_5" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_1_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_1_6" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_1_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
     </LinearLayout>
@@ -93,31 +93,31 @@
     <!-- Row 2 -->
     <LinearLayout android:id="@+id/row2" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_5" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_2_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_2_6" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_2_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
     </LinearLayout>
@@ -125,31 +125,31 @@
     <!-- Row 3 -->
     <LinearLayout android:id="@+id/row3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_5" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_3_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_3_6" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_3_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
     </LinearLayout>
@@ -157,31 +157,31 @@
     <!-- Row 4 -->
     <LinearLayout android:id="@+id/row4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" android:gravity="center_vertical">
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_0" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_0" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_0" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_1" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_1" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_1" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_2" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_2" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_2" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_3" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_3" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_3" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_4" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_4" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_4" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFFFFFF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_5" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_5" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_5" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FF4488FF"/>
         </FrameLayout>
         <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1">
-            <ImageView android:id="@+id/bg_4_6" android:layout_width="16dp" android:layout_height="16dp" android:layout_gravity="center" android:visibility="gone"/>
+            <ImageView android:id="@+id/bg_4_6" android:layout_width="match_parent" android:layout_height="match_parent" android:scaleType="fitCenter" android:visibility="gone"/>
             <TextView android:id="@+id/day_4_6" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center" android:textSize="13sp" android:textStyle="italic|bold" android:fontFamily="serif" android:textColor="#FFFF4444"/>
         </FrameLayout>
     </LinearLayout>

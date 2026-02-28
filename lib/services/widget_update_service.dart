@@ -57,7 +57,7 @@ class WidgetUpdateService {
     await HomeWidget.saveWidgetData<String>(
         'calendar_widget_data', jsonEncode(cellData));
     await HomeWidget.saveWidgetData<int>(
-        'widget_bg_color', settings.backgroundColor.toARGB32());
+        'widget_bg_color', settings.backgroundColor.toARGB32().toSigned(32));
     await HomeWidget.saveWidgetData<bool>(
         'widget_start_on_monday', settings.startOnMonday);
     await HomeWidget.saveWidgetData<String>(

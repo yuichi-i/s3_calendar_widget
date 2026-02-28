@@ -22,7 +22,7 @@ class AppSettings {
 
   Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_bgColorKey, backgroundColor.toARGB32());
+    await prefs.setInt(_bgColorKey, backgroundColor.toARGB32().toSigned(32));
     await prefs.setBool(_startOnMondayKey, startOnMonday);
   }
 

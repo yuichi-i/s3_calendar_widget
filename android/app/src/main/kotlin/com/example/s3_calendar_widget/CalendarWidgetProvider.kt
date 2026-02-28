@@ -80,7 +80,14 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
             val bgColorInt = try {
-                prefs.getInt(KEY_BG_COLOR, Color.BLACK)
+                // home_widget は Dart の int を Long として保存する場合があるため
+                // getInt → getLong の順にフォールバックして読み取る
+                val storedLong = prefs.getLong(KEY_BG_COLOR, Long.MIN_VALUE)
+                if (storedLong != Long.MIN_VALUE) {
+                    storedLong.toInt()
+                } else {
+                    prefs.getInt(KEY_BG_COLOR, Color.BLACK)
+                }
             } catch (_: Exception) {
                 Color.BLACK
             }

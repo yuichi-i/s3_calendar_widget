@@ -128,6 +128,10 @@ flutter build appbundle --release
 ## プロジェクト構成
 
 ```
+android/
+└── app/src/main/kotlin/.../
+    ├── CalendarWidgetProvider.kt  # ホーム画面ウィジェット描画
+    └── MainActivity.kt            # アプリエントリー
 lib/
 ├── main.dart                   # アプリエントリーポイント
 ├── models/

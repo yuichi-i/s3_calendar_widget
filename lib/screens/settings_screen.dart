@@ -88,6 +88,79 @@ class SettingsScreen extends StatelessWidget {
                   onTap: () => _showColorPicker(context, provider),
                 ),
               ),
+              const SizedBox(height: 12),
+              // 透過率設定
+              _SectionHeader(title: 'ウィジェット背景の透過率'),
+              Card(
+                color: Colors.grey[900],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          // 透過率プレビュー
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: Stack(
+                                children: [
+                                  // 市松模様（透過を視覚化）
+                                  CustomPaint(
+                                    size: const Size(32, 32),
+                                    painter: _CheckerPainter(),
+                                  ),
+                                  Container(
+                                    color: provider.backgroundColor.withValues(
+                                      alpha: provider.backgroundOpacity,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Slider(
+                              value: provider.backgroundOpacity,
+                              min: 0.0,
+                              max: 1.0,
+                              divisions: 20,
+                              activeColor: Colors.white70,
+                              inactiveColor: Colors.white24,
+                              onChanged: (v) => provider.setBackgroundOpacity(v),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 36,
+                            child: Text(
+                              '${(provider.backgroundOpacity * 100).round()}%',
+                              style: GoogleFonts.rajdhani(
+                                color: Colors.white70,
+                                fontSize: 13,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('完全透明',
+                              style: GoogleFonts.rajdhani(
+                                  color: Colors.white38, fontSize: 11)),
+                          Text('不透明',
+                              style: GoogleFonts.rajdhani(
+                                  color: Colors.white38, fontSize: 11)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               // 色の凡例
               _SectionHeader(title: '色の凡例'),
@@ -161,9 +234,9 @@ class SettingsScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white24,
             ),
-            onPressed: () {
-              provider.setBackgroundColor(pickedColor);
-              Navigator.pop(ctx);
+            onPressed: () async {
+              await provider.setBackgroundColor(pickedColor);
+              if (ctx.mounted) Navigator.pop(ctx);
             },
             child: Text('決定',
                 style: GoogleFonts.rajdhani(color: Colors.white)),
@@ -221,3 +294,24 @@ class _ColorLegendRow extends StatelessWidget {
   }
 }
 
+/// 透過プレビュー用の市松模様を描画するPainter
+class _CheckerPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    const cellSize = 8.0;
+    final light = Paint()..color = const Color(0xFFCCCCCC);
+    final dark = Paint()..color = const Color(0xFF888888);
+    for (double y = 0; y < size.height; y += cellSize) {
+      for (double x = 0; x < size.width; x += cellSize) {
+        final isLight = ((x / cellSize).floor() + (y / cellSize).floor()) % 2 == 0;
+        canvas.drawRect(
+          Rect.fromLTWH(x, y, cellSize, cellSize),
+          isLight ? light : dark,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_CheckerPainter oldDelegate) => false;
+}

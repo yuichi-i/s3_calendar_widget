@@ -54,10 +54,12 @@ class WidgetUpdateService {
     debugPrint('[WidgetUpdate] total holiday dates saved: ${allHolidayDates.length}');
 
     // home_widget経由でAndroidに保存
+    final bgColorValue = settings.effectiveBackgroundColor.toARGB32().toSigned(32);
+    debugPrint('[WidgetUpdate] saving bg_color=$bgColorValue (hex: 0x${bgColorValue.toRadixString(16)})');
     await HomeWidget.saveWidgetData<String>(
         'calendar_widget_data', jsonEncode(cellData));
     await HomeWidget.saveWidgetData<int>(
-        'widget_bg_color', settings.backgroundColor.toARGB32().toSigned(32));
+        'widget_bg_color', bgColorValue);
     await HomeWidget.saveWidgetData<bool>(
         'widget_start_on_monday', settings.startOnMonday);
     await HomeWidget.saveWidgetData<String>(

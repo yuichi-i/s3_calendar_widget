@@ -80,13 +80,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
             val bgColorInt = try {
-                // home_widget は Dart の int を Long として保存する場合があるため
-                // getInt → getLong の順にフォールバックして読み取る
-                val storedLong = prefs.getLong(KEY_BG_COLOR, Long.MIN_VALUE)
-                if (storedLong != Long.MIN_VALUE) {
-                    storedLong.toInt()
-                } else {
-                    prefs.getInt(KEY_BG_COLOR, Color.BLACK)
+                // home_widget の保存型（Int/Long）を判別して正しく読み取る
+                val raw = prefs.all[KEY_BG_COLOR]
+                when (raw) {
+                    is Int  -> raw
+                    is Long -> raw.toInt()
+                    else    -> Color.BLACK
                 }
             } catch (_: Exception) {
                 Color.BLACK
@@ -100,8 +99,9 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
             val views = RemoteViews(context.packageName, R.layout.calendar_widget)
 
-            // 背景色設定（setIntのメソッド名指定より直接指定が安全）
-            views.setInt(R.id.widget_root, "setBackgroundColor", bgColorInt)
+            // 背景色設定（API 31+ の setColorInt を使用、minSdk=33 なので安全）
+            Log.d(TAG, "applying bgColor=#${Integer.toHexString(bgColorInt)}")
+            views.setColorInt(R.id.widget_root, "setBackgroundColor", bgColorInt, bgColorInt)
 
             // クリックでアプリを起動するインテント
             val launchIntent = Intent(context, MainActivity::class.java).apply {
@@ -159,6 +159,14 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                 views.setTextColor(DOW_ID_MAP[i], dowColors[i])
             }
 
+            // 今日の日付キー
+            val todayCal = Calendar.getInstance()
+            val todayKey = formatDateKey(
+                todayCal.get(Calendar.YEAR),
+                todayCal.get(Calendar.MONTH) + 1,
+                todayCal.get(Calendar.DAY_OF_MONTH)
+            )
+
             // セルデータ（35セル固定）
             for (cellIndex in 0 until 35) {
                 val row = cellIndex / 7
@@ -174,17 +182,30 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
                     // colorType が holiday でなくても、holidaySet に含まれていれば祝日扱いにする
                     val effectiveColorType = if (colorType != "holiday" && !isAdjacent && dateStr.isNotEmpty()) {
-                        val dateKey = dateStr.take(10) // "yyyy-MM-dd" 部分だけ取り出す
+                        val dateKey = dateStr.take(10)
                         if (holidaySet.contains(dateKey)) "holiday" else colorType
                     } else {
                         colorType
                     }
 
-                    val color = resolveColor(effectiveColorType, isAdjacent)
+                    val isToday = !isAdjacent && dateStr.take(10) == todayKey
+                    val textColor = resolveColor(effectiveColorType, isAdjacent)
+                    val todayTextColor = when (effectiveColorType) {
+                        "sunday", "holiday" -> COLOR_RED
+                        "saturday"          -> COLOR_BLUE
+                        else                -> Color.BLACK
+                    }
                     views.setTextViewText(viewId, dayText)
-                    views.setTextColor(viewId, color)
+                    if (isToday) {
+                        views.setInt(viewId, "setBackgroundResource", R.drawable.today_circle)
+                        views.setTextColor(viewId, todayTextColor)
+                    } else {
+                        views.setInt(viewId, "setBackgroundResource", 0)
+                        views.setTextColor(viewId, textColor)
+                    }
                 } else {
                     views.setTextViewText(viewId, "")
+                    views.setInt(viewId, "setBackgroundResource", 0)
                 }
             }
         }
@@ -193,6 +214,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val cal = Calendar.getInstance()
             val year = cal.get(Calendar.YEAR)
             val month = cal.get(Calendar.MONTH)
+            val todayDay = cal.get(Calendar.DAY_OF_MONTH)
 
             views.setTextViewText(R.id.tv_month_year, "${year}年 ${month + 1}月")
 
@@ -231,20 +253,35 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         val dow = getDayOfWeek(prevCal.get(Calendar.YEAR), prevCal.get(Calendar.MONTH), prevDay)
                         views.setTextViewText(viewId, prevDay.toString())
                         views.setTextColor(viewId, dimColorForDow(dow))
+                        views.setInt(viewId, "setBackgroundResource", 0)
                     }
                     currentDay <= daysInMonth -> {
                         val dow = getDayOfWeek(year, month, currentDay)
                         val dateKey = formatDateKey(year, month + 1, currentDay)
                         val isHoliday = holidaySet.contains(dateKey)
-                        val color = if (isHoliday) COLOR_RED else brightColorForDow(dow)
+                        val isToday = currentDay == todayDay
+                        val normalColor = if (isHoliday) COLOR_RED else brightColorForDow(dow)
+                        val todayTextColor = when {
+                            isHoliday                  -> COLOR_RED
+                            dow == Calendar.SUNDAY     -> COLOR_RED
+                            dow == Calendar.SATURDAY   -> COLOR_BLUE
+                            else                       -> Color.BLACK
+                        }
                         views.setTextViewText(viewId, currentDay.toString())
-                        views.setTextColor(viewId, color)
+                        if (isToday) {
+                            views.setInt(viewId, "setBackgroundResource", R.drawable.today_circle)
+                            views.setTextColor(viewId, todayTextColor)
+                        } else {
+                            views.setInt(viewId, "setBackgroundResource", 0)
+                            views.setTextColor(viewId, normalColor)
+                        }
                         currentDay++
                     }
                     else -> {
                         val dow = getDayOfWeek(year, month + 1, nextDay)
                         views.setTextViewText(viewId, nextDay.toString())
                         views.setTextColor(viewId, dimColorForDow(dow))
+                        views.setInt(viewId, "setBackgroundResource", 0)
                         nextDay++
                     }
                 }

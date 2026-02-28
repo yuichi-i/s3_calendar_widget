@@ -7,6 +7,7 @@ class SettingsProvider extends ChangeNotifier {
   AppSettings get settings => _settings;
   Color get backgroundColor => _settings.backgroundColor;
   bool get startOnMonday => _settings.startOnMonday;
+  double get backgroundOpacity => _settings.backgroundOpacity;
 
   Future<void> init() async {
     _settings = await AppSettings.load();
@@ -19,10 +20,15 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setBackgroundOpacity(double opacity) async {
+    _settings = _settings.copyWith(backgroundOpacity: opacity);
+    await _settings.save();
+    notifyListeners();
+  }
+
   Future<void> setStartOnMonday(bool value) async {
     _settings = _settings.copyWith(startOnMonday: value);
     await _settings.save();
     notifyListeners();
   }
 }
-

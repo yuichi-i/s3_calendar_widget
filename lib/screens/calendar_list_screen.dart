@@ -43,9 +43,29 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
 
     _scrollController = ScrollController()..addListener(_onScroll);
 
-    // 初回ウィジェット更新 + 今月へのスクロール（保存済みでなければ）
+    // SettingsProvider の init() 完了後にウィジェット更新
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _updateWidget();
+      final provider =
+          Provider.of<SettingsProvider>(context, listen: false);
+      // init() はすでに main.dart で呼ばれているが非同期のため、
+      // addListener で初期化完了を検知してから初回更新する
+      void onProviderReady() {
+        _updateWidget();
+        provider.removeListener(onProviderReady);
+      }
+      // すでに設定がデフォルト以外なら初期化済みとみなして即更新、
+      // そうでなければリスナー経由で待つ
+      if (provider.settings.backgroundColor != const Color(0xFF000000) ||
+          provider.startOnMonday) {
+        _updateWidget();
+      } else {
+        provider.addListener(onProviderReady);
+        // 念のため短い遅延後にも実行（init済みでデフォルト値の場合に備えて）
+        Future.delayed(const Duration(milliseconds: 500), () {
+          provider.removeListener(onProviderReady);
+          if (mounted) _updateWidget();
+        });
+      }
       _scrollToCurrentMonthIfNeeded();
     });
   }

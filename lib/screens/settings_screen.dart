@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+
+/// バッテリー最適化除外を操作するMethodChannel
+const _batteryChannel = MethodChannel('com.example.s3_calendar_widget/battery');
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -28,6 +32,9 @@ class SettingsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              // バッテリー最適化除外の案内
+              const _BatteryOptimizationCard(),
+              const SizedBox(height: 24),
               // 週の始まり設定
               _SectionHeader(title: '週の始まり'),
               Card(
@@ -314,4 +321,106 @@ class _CheckerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckerPainter oldDelegate) => false;
+}
+
+/// バッテリー最適化除外の案内カード
+/// ウィジェットの日付自動更新に必要な設定をユーザーに促す
+class _BatteryOptimizationCard extends StatefulWidget {
+  const _BatteryOptimizationCard();
+
+  @override
+  State<_BatteryOptimizationCard> createState() => _BatteryOptimizationCardState();
+}
+
+class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
+  bool? _isIgnoring;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkStatus();
+  }
+
+  Future<void> _checkStatus() async {
+    try {
+      final result = await _batteryChannel.invokeMethod<bool>('isIgnoringBatteryOptimizations');
+      if (mounted) setState(() => _isIgnoring = result ?? false);
+    } catch (_) {
+      if (mounted) setState(() => _isIgnoring = null);
+    }
+  }
+
+  Future<void> _requestExemption() async {
+    try {
+      await _batteryChannel.invokeMethod('requestIgnoreBatteryOptimizations');
+      // 設定画面から戻ってきたら状態を再確認
+      await Future.delayed(const Duration(seconds: 1));
+      await _checkStatus();
+    } catch (_) {}
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 状態不明（Android以外など）の場合は非表示
+    if (_isIgnoring == null) return const SizedBox.shrink();
+
+    final isOk = _isIgnoring == true;
+    return Card(
+      color: isOk ? Colors.grey[900] : Colors.orange[900]?.withValues(alpha: 0.6),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isOk ? Icons.check_circle_outline : Icons.battery_alert,
+                  color: isOk ? Colors.greenAccent : Colors.orange,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'ウィジェット自動更新',
+                  style: GoogleFonts.rajdhani(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              isOk
+                  ? '日付が変わると自動でウィジェットが更新されます。'
+                  : '省電力設定がオンのため、日付変更時のウィジェット自動更新が遅延する可能性があります。\n'
+                    '下のボタンからこのアプリのバッテリー最適化を除外することを推奨します。',
+              style: GoogleFonts.rajdhani(
+                color: isOk ? Colors.white54 : Colors.orange[100],
+                fontSize: 13,
+              ),
+            ),
+            if (!isOk) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange[800],
+                  ),
+                  icon: const Icon(Icons.settings, size: 16),
+                  label: Text(
+                    'バッテリー最適化を除外する',
+                    style: GoogleFonts.rajdhani(color: Colors.white),
+                  ),
+                  onPressed: _requestExemption,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 }

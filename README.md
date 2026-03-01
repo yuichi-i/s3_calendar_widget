@@ -75,7 +75,7 @@ Flutter で作成されており、日本の祝日を自動取得して色分け
 
 ```bash
 # リポジトリのクローン
-git clone <repository-url>
+git clone git@github.com:yuichi-i/s3_calendar_widget.git
 cd s3_calendar_widget
 
 # 依存パッケージの取得

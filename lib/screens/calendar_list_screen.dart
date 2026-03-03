@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
+import '../services/calendar_service.dart';
 import '../services/widget_update_service.dart';
 import '../widgets/month_calendar_card.dart';
 import 'settings_screen.dart';
@@ -18,6 +20,7 @@ class CalendarListScreen extends StatefulWidget {
 
 class _CalendarListScreenState extends State<CalendarListScreen> {
   final WidgetUpdateService _widgetUpdateService = WidgetUpdateService();
+  final CalendarService _calendarService = CalendarService();
 
   // 表示する月のリスト（過去→現在→未来）
   late List<DateTime> _months;
@@ -83,26 +86,37 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
 
   /// 初回表示時（PageStorageに保存された位置がない場合）に今月へジャンプする
   void _scrollToCurrentMonthIfNeeded() {
-    // PageStorage に保存済みのオフセットがあればそちらが使われるため何もしない
     final savedOffset =
         PageStorage.of(context).readState(context, identifier: _scrollKey);
     if (savedOffset != null) return;
-
-    // 2列グリッドなので今月は (_currentMonthIndex ~/ 2) 行目
-    // childAspectRatio=0.85、spacing=8、padding=8 から大まかなアイテム高さを計算
     if (!_scrollController.hasClients) return;
-    // GridViewは縦スクロールなのでhorizontal幅はMediaQueryから取得する
+
     final screenWidth = MediaQuery.of(context).size.width;
     const padding = 8.0;
     const spacing = 8.0;
     const crossAxisCount = 2;
-    const aspectRatio = 0.85;
-    final itemWidth =
-        (screenWidth - padding * 2 - spacing * (crossAxisCount - 1)) /
-            crossAxisCount;
-    final itemHeight = itemWidth / aspectRatio;
-    final row = _currentMonthIndex ~/ crossAxisCount;
-    final offset = row * (itemHeight + spacing) + padding;
+    final cellWidth =
+        (screenWidth - padding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
+
+    // 今月までの各行の高さを合計してスクロールオフセットを計算
+    double offset = padding;
+    for (int i = 0; i < _currentMonthIndex; i += crossAxisCount) {
+      final leftM = i < _months.length ? _months[i] : null;
+      final rightM = i + 1 < _months.length ? _months[i + 1] : null;
+      double rowH = 0;
+      for (final m in [leftM, rightM]) {
+        if (m == null) continue;
+        final rows = _calendarService.getRowCount(
+          year: m.year,
+          month: m.month,
+          startOnMonday: Provider.of<SettingsProvider>(context, listen: false).startOnMonday,
+        );
+        final ratio = rows == 6 ? 0.70 : 0.78;
+        final h = cellWidth / ratio;
+        if (h > rowH) rowH = h;
+      }
+      offset += rowH + spacing;
+    }
 
     _scrollController.jumpTo(
       offset.clamp(0.0, _scrollController.position.maxScrollExtent),
@@ -206,11 +220,10 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       key: _scrollKey,
       controller: _scrollController,
       padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 0.85,
+      gridDelegate: _MonthGridDelegate(
+        months: _months,
+        startOnMonday: startOnMonday,
+        calendarService: _calendarService,
       ),
       itemCount: _months.length,
       itemBuilder: (context, index) {
@@ -242,6 +255,136 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
         );
       },
     );
+  }
+}
+
+/// 月ごとに行数（5行 or 6行）に応じたアスペクト比を計算するグリッドデリゲート
+class _MonthGridDelegate extends SliverGridDelegate {
+  final List<DateTime> months;
+  final bool startOnMonday;
+  final CalendarService calendarService;
+
+  // 基準アスペクト比（5行のとき）。縦を若干広げてゆとりを持たせる
+  static const double _baseAspectRatio5 = 0.78;
+  // 6行の場合は固定ヘッダー分を加味してやや高い比率（= 縦幅が短い）にする
+  static const double _baseAspectRatio6 = 0.70;
+
+  _MonthGridDelegate({
+    required this.months,
+    required this.startOnMonday,
+    required this.calendarService,
+  });
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    const crossAxisCount = 2;
+    const spacing = 8.0;
+    const padding = 8.0;
+    final cellWidth =
+        (constraints.crossAxisExtent - spacing * (crossAxisCount - 1) - padding * 2) /
+            crossAxisCount;
+
+    // 月ごとの高さをリスト化
+    final heights = List<double>.generate(months.length, (i) {
+      final m = months[i];
+      final rows = calendarService.getRowCount(
+        year: m.year,
+        month: m.month,
+        startOnMonday: startOnMonday,
+      );
+      final ratio = rows == 6 ? _baseAspectRatio6 : _baseAspectRatio5;
+      return cellWidth / ratio;
+    });
+
+    return _MonthGridLayout(
+      crossAxisCount: crossAxisCount,
+      crossAxisSpacing: spacing,
+      mainAxisSpacing: spacing,
+      padding: padding,
+      cellWidth: cellWidth,
+      heights: heights,
+    );
+  }
+
+  @override
+  bool shouldRelayout(_MonthGridDelegate oldDelegate) {
+    return oldDelegate.months != months ||
+        oldDelegate.startOnMonday != startOnMonday;
+  }
+}
+
+/// 月ごとに高さが異なる2列グリッドのレイアウト
+class _MonthGridLayout extends SliverGridLayout {
+  final int crossAxisCount;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
+  final double padding;
+  final double cellWidth;
+  final List<double> heights;
+
+  // 各アイテムのY座標オフセットをキャッシュ
+  late final List<double> _offsets;
+  late final double _totalHeight;
+
+  _MonthGridLayout({
+    required this.crossAxisCount,
+    required this.crossAxisSpacing,
+    required this.mainAxisSpacing,
+    required this.padding,
+    required this.cellWidth,
+    required this.heights,
+  }) {
+    _offsets = List<double>.filled(heights.length, 0);
+    // 2列グリッドなので左右ペアで高さを決める（高い方に合わせる）
+    double y = padding;
+    for (int i = 0; i < heights.length; i += crossAxisCount) {
+      final leftH = i < heights.length ? heights[i] : 0.0;
+      final rightH = i + 1 < heights.length ? heights[i + 1] : 0.0;
+      final rowH = leftH > rightH ? leftH : rightH;
+      _offsets[i] = y;
+      if (i + 1 < heights.length) _offsets[i + 1] = y;
+      y += rowH + mainAxisSpacing;
+    }
+    _totalHeight = y - mainAxisSpacing + padding;
+  }
+
+  @override
+  double computeMaxScrollOffset(int childCount) => _totalHeight;
+
+  @override
+  SliverGridGeometry getGeometryForChildIndex(int index) {
+    final col = index % crossAxisCount;
+    final xOffset = padding + col * (cellWidth + crossAxisSpacing);
+    final rowIndex = index ~/ crossAxisCount;
+    // 行内の高い方のセルに合わせた行高さ
+    final leftIdx = rowIndex * crossAxisCount;
+    final rightIdx = leftIdx + 1;
+    final leftH = leftIdx < heights.length ? heights[leftIdx] : 0.0;
+    final rightH = rightIdx < heights.length ? heights[rightIdx] : 0.0;
+    final rowH = leftH > rightH ? leftH : rightH;
+
+    return SliverGridGeometry(
+      scrollOffset: _offsets[index],
+      crossAxisOffset: xOffset,
+      mainAxisExtent: rowH,
+      crossAxisExtent: cellWidth,
+    );
+  }
+
+  @override
+  int getMinChildIndexForScrollOffset(double scrollOffset) {
+    for (int i = 0; i < _offsets.length; i += crossAxisCount) {
+      if (_offsets[i] > scrollOffset) return (i - crossAxisCount).clamp(0, _offsets.length - 1);
+    }
+    return (_offsets.length - crossAxisCount).clamp(0, _offsets.length - 1);
+  }
+
+  @override
+  int getMaxChildIndexForScrollOffset(double scrollOffset) {
+    for (int i = 0; i < _offsets.length; i += crossAxisCount) {
+      if (_offsets[i] > scrollOffset) return (i + crossAxisCount - 1).clamp(0, _offsets.length - 1);
+    }
+    return _offsets.length - 1;
   }
 }
 

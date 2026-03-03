@@ -50,22 +50,24 @@ class CalendarWidgetProvider : AppWidgetProvider() {
         private const val KEY_SATURDAY_COLOR       = "widget_saturday_color"
         private const val KEY_SUNDAY_HOLIDAY_COLOR = "widget_sunday_holiday_color"
 
-        // 5 rows x 7 cols = 35 cells
+        // 6 rows x 7 cols = 42 cells（6行目は6行必要な月のみ表示）
         private val DAY_ID_MAP: Array<IntArray> by lazy { arrayOf(
             intArrayOf(R.id.day_0_0, R.id.day_0_1, R.id.day_0_2, R.id.day_0_3, R.id.day_0_4, R.id.day_0_5, R.id.day_0_6),
             intArrayOf(R.id.day_1_0, R.id.day_1_1, R.id.day_1_2, R.id.day_1_3, R.id.day_1_4, R.id.day_1_5, R.id.day_1_6),
             intArrayOf(R.id.day_2_0, R.id.day_2_1, R.id.day_2_2, R.id.day_2_3, R.id.day_2_4, R.id.day_2_5, R.id.day_2_6),
             intArrayOf(R.id.day_3_0, R.id.day_3_1, R.id.day_3_2, R.id.day_3_3, R.id.day_3_4, R.id.day_3_5, R.id.day_3_6),
             intArrayOf(R.id.day_4_0, R.id.day_4_1, R.id.day_4_2, R.id.day_4_3, R.id.day_4_4, R.id.day_4_5, R.id.day_4_6),
+            intArrayOf(R.id.day_5_0, R.id.day_5_1, R.id.day_5_2, R.id.day_5_3, R.id.day_5_4, R.id.day_5_5, R.id.day_5_6),
         )}
 
-        // Background circle ImageView ids
+        // 背景円 ImageView ids（6行分）
         private val BG_ID_MAP: Array<IntArray> by lazy { arrayOf(
             intArrayOf(R.id.bg_0_0, R.id.bg_0_1, R.id.bg_0_2, R.id.bg_0_3, R.id.bg_0_4, R.id.bg_0_5, R.id.bg_0_6),
             intArrayOf(R.id.bg_1_0, R.id.bg_1_1, R.id.bg_1_2, R.id.bg_1_3, R.id.bg_1_4, R.id.bg_1_5, R.id.bg_1_6),
             intArrayOf(R.id.bg_2_0, R.id.bg_2_1, R.id.bg_2_2, R.id.bg_2_3, R.id.bg_2_4, R.id.bg_2_5, R.id.bg_2_6),
             intArrayOf(R.id.bg_3_0, R.id.bg_3_1, R.id.bg_3_2, R.id.bg_3_3, R.id.bg_3_4, R.id.bg_3_5, R.id.bg_3_6),
             intArrayOf(R.id.bg_4_0, R.id.bg_4_1, R.id.bg_4_2, R.id.bg_4_3, R.id.bg_4_4, R.id.bg_4_5, R.id.bg_4_6),
+            intArrayOf(R.id.bg_5_0, R.id.bg_5_1, R.id.bg_5_2, R.id.bg_5_3, R.id.bg_5_4, R.id.bg_5_5, R.id.bg_5_6),
         )}
 
         private val DOW_ID_MAP: IntArray by lazy { intArrayOf(
@@ -106,17 +108,24 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val dowHeadersJson   = prefs.getString(KEY_DOW_HEADERS, null)
             val holidayDatesJson = prefs.getString(KEY_HOLIDAY_DATES, null)
 
-            // Estimate cell height from actual widget height
+            // ウィジェットの実際の高さからセルサイズを計算
             val opts = appWidgetManager.getAppWidgetOptions(appWidgetId)
             val widgetHeightDp = opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 0)
                 .takeIf { it > 0 }
                 ?: opts.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 120)
             val density = context.resources.displayMetrics.density
             val widgetHeightPx = (widgetHeightDp * density).toInt()
-            // Subtract estimated header area (~40dp) then divide by 5 rows
+
+            // データから行数（5 or 6）を判定してセルサイズを計算
+            val totalCells = if (calendarDataJson != null) {
+                try { val arr = org.json.JSONArray(calendarDataJson); if (arr.length() > 35) 42 else 35 } catch (_: Exception) { 35 }
+            } else {
+                needsSixRowsForCurrentMonth(startOnMonday)
+            }
+            val rowCount = totalCells / 7
             val headerPx = (40 * density).toInt()
-            val cellHeightPx = ((widgetHeightPx - headerPx) / 5).coerceAtLeast((16 * density).toInt())
-            val circleSizePx = (cellHeightPx * 0.92f).toInt() // ~92% of cell height, leaving small margin
+            val cellHeightPx = ((widgetHeightPx - headerPx) / rowCount).coerceAtLeast((14 * density).toInt())
+            val circleSizePx = (cellHeightPx * 0.88f).toInt()
 
             val circleBitmap = createCircleBitmap(circleSizePx)
 
@@ -192,7 +201,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val todayCal = Calendar.getInstance()
             val todayKey = formatDateKey(todayCal.get(Calendar.YEAR), todayCal.get(Calendar.MONTH) + 1, todayCal.get(Calendar.DAY_OF_MONTH))
 
-            for (cellIndex in 0 until 35) {
+            // 6行必要か判定してrow5の表示/非表示を切り替える
+            val needs6Rows = dataArray.length() > 35
+            views.setViewVisibility(R.id.row5, if (needs6Rows) View.VISIBLE else View.GONE)
+
+            val totalCells = if (needs6Rows) 42 else 35
+            for (cellIndex in 0 until totalCells) {
                 val row = cellIndex / 7; val col = cellIndex % 7
                 val viewId = DAY_ID_MAP[row][col]
                 val bgViewId = BG_ID_MAP[row][col]
@@ -245,9 +259,14 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val offset = if (startOnMonday) (if (firstDayOfWeek == Calendar.SUNDAY) 6 else firstDayOfWeek - 2) else firstDayOfWeek - 1
             val prevCal = (cal.clone() as Calendar).apply { add(Calendar.MONTH, -1) }
             val prevDaysInMonth = prevCal.getActualMaximum(Calendar.DAY_OF_MONTH)
-            var currentDay = 1; var nextDay = 1
 
-            for (cellIndex in 0 until 35) {
+            // 6行必要か判定
+            val needs6Rows = (offset + daysInMonth) > 35
+            views.setViewVisibility(R.id.row5, if (needs6Rows) View.VISIBLE else View.GONE)
+            val totalCells = if (needs6Rows) 42 else 35
+
+            var currentDay = 1; var nextDay = 1
+            for (cellIndex in 0 until totalCells) {
                 val row = cellIndex / 7; val col = cellIndex % 7
                 val viewId = DAY_ID_MAP[row][col]
                 val bgViewId = BG_ID_MAP[row][col]
@@ -285,6 +304,16 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                     }
                 }
             }
+        }
+
+        /** 当月が6行必要かどうかを判定する（renderCurrentMonth 用） */
+        private fun needsSixRowsForCurrentMonth(startOnMonday: Boolean): Int {
+            val cal = Calendar.getInstance()
+            cal.set(Calendar.DAY_OF_MONTH, 1)
+            val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+            val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val offset = if (startOnMonday) (if (firstDayOfWeek == Calendar.SUNDAY) 6 else firstDayOfWeek - 2) else firstDayOfWeek - 1
+            return if ((offset + daysInMonth) > 35) 42 else 35
         }
 
         // helpers

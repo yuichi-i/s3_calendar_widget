@@ -3,7 +3,8 @@ import '../models/calendar_cell.dart';
 import '../models/holiday.dart';
 
 class CalendarService {
-  /// 指定月のカレンダーセルリストを生成する（常に5行×7列=35セル）
+  /// 指定月のカレンダーセルリストを生成する（5行×7列=35セル または 6行×7列=42セル）
+  /// 当月の日付が5行に収まらない場合は6行にする
   /// 先頭・末尾は前月・次月の日付で埋める
   List<CalendarCell> buildMonthCells({
     required int year,
@@ -64,9 +65,11 @@ class CalendarService {
       ));
     }
 
-    // 次月の日付で末尾を埋めて35セル（5行×7列）にする
+    // 次月の日付で末尾を埋める（35セル or 42セル）
+    // 当月+オフセットが35を超えたら6行=42セルにする
+    final totalCells = cells.length > 35 ? 42 : 35;
     int nextDay = 1;
-    while (cells.length < 35) {
+    while (cells.length < totalCells) {
       final date = DateTime(year, month + 1, nextDay++);
       cells.add(CalendarCell(
         date: date,
@@ -78,6 +81,19 @@ class CalendarService {
     }
 
     return cells;
+  }
+
+  /// 指定月の表示に必要な行数（5 or 6）を返す
+  int getRowCount({
+    required int year,
+    required int month,
+    required bool startOnMonday,
+  }) {
+    final firstDay = DateTime(year, month, 1);
+    final lastDay = DateTime(year, month + 1, 0);
+    int firstWeekday = firstDay.weekday;
+    int offset = startOnMonday ? firstWeekday - 1 : firstWeekday % 7;
+    return (offset + lastDay.day) > 35 ? 6 : 5;
   }
 
   DayType _dayType(DateTime date, Map<String, Holiday> holidays) {

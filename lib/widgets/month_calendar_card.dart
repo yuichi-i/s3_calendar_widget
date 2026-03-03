@@ -41,6 +41,7 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
 
   List<CalendarCell> _cells = [];
   bool _loading = true;
+  int _rowCount = 5; // 5行 or 6行（月によって変わる）
   /// 当月の日付文字列（yyyy-MM-dd）→ イベント色リスト
   Map<String, List<Color>> _eventColors = {};
   /// 前月の日付文字列（yyyy-MM-dd）→ イベント色リスト（薄色用）
@@ -82,9 +83,15 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
       saturdayColor: widget.saturdayColor,
       sundayHolidayColor: widget.sundayHolidayColor,
     );
+    final rowCount = _calendarService.getRowCount(
+      year: widget.year,
+      month: widget.month,
+      startOnMonday: widget.startOnMonday,
+    );
     if (mounted) {
       setState(() {
         _cells = cells;
+        _rowCount = rowCount;
         _loading = false;
       });
     }
@@ -202,9 +209,10 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
   }
 
   Widget _buildGrid() {
-    // 常に35セル（5行×7列）
+    // _rowCount行×7列（5行=35セル or 6行=42セル）
+    final totalCells = _rowCount * 7;
     final rows = <Widget>[];
-    for (int i = 0; i < 35; i += 7) {
+    for (int i = 0; i < totalCells; i += 7) {
       final weekCells = _cells.sublist(i, (i + 7).clamp(0, _cells.length));
 
       // この週の有効な日付リスト（当月のみ）を取得（空セルのフォールバック用）

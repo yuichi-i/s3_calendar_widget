@@ -12,3 +12,7 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+
+# APIキー・OAuth情報を含むため公開しない
+app/google-services.json
+

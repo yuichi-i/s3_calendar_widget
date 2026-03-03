@@ -35,6 +35,10 @@ class SettingsScreen extends StatelessWidget {
               // バッテリー最適化除外の案内
               const _BatteryOptimizationCard(),
               const SizedBox(height: 24),
+              // Google カレンダー連携設定
+              _SectionHeader(title: 'Google カレンダー連携'),
+              _GoogleCalendarCard(provider: provider),
+              const SizedBox(height: 24),
               // 週の始まり設定
               _SectionHeader(title: '週の始まり'),
               Card(
@@ -452,6 +456,101 @@ class _CheckerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CheckerPainter oldDelegate) => false;
+}
+
+/// Google カレンダー連携カード
+class _GoogleCalendarCard extends StatelessWidget {
+  final SettingsProvider provider;
+  const _GoogleCalendarCard({required this.provider});
+
+  @override
+  Widget build(BuildContext context) {
+    final isSignedIn = provider.googleCalendarEnabled;
+    final email = provider.googleAccountEmail;
+
+    return Card(
+      color: Colors.grey[900],
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  isSignedIn ? Icons.link : Icons.link_off,
+                  color: isSignedIn ? Colors.greenAccent : Colors.white38,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isSignedIn
+                        ? '連携中: $email'
+                        : '未連携',
+                    style: GoogleFonts.rajdhani(
+                      color: isSignedIn ? Colors.greenAccent : Colors.white54,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              isSignedIn
+                  ? 'カレンダーの予定が日付の下に●で表示されます。\n日付をタップするとGoogleカレンダーが開きます。'
+                  : 'Googleアカウントでサインインすると、アプリ画面のカレンダーに予定を表示できます。',
+              style: GoogleFonts.rajdhani(
+                color: Colors.white54,
+                fontSize: 12,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: isSignedIn
+                  ? OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.white24),
+                      ),
+                      icon: const Icon(Icons.logout, size: 16, color: Colors.white54),
+                      label: Text(
+                        'サインアウト',
+                        style: GoogleFonts.rajdhani(color: Colors.white54),
+                      ),
+                      onPressed: () => provider.signOutGoogle(),
+                    )
+                  : ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4285F4),
+                      ),
+                      icon: const Icon(Icons.login, size: 16, color: Colors.white),
+                      label: Text(
+                        'Google アカウントでサインイン',
+                        style: GoogleFonts.rajdhani(color: Colors.white),
+                      ),
+                      onPressed: () async {
+                        final success = await provider.signInGoogle();
+                        if (context.mounted && !success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'サインインがキャンセルされたか、失敗しました',
+                                style: GoogleFonts.rajdhani(),
+                              ),
+                              backgroundColor: Colors.grey[800],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 /// バッテリー最適化除外の案内カード

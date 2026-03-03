@@ -43,6 +43,11 @@ dependencies:
   provider: ^6.1.2
   flutter_colorpicker: ^1.1.0
 
+  # Google カレンダー連携
+  google_sign_in: ^6.2.2
+  googleapis: ^13.2.0
+  url_launcher: ^6.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

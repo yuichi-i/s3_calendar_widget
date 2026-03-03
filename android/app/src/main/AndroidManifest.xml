@@ -66,5 +66,11 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Google カレンダーアプリ起動用 -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https" android:host="calendar.google.com"/>
+        </intent>
+        <package android:name="com.google.android.calendar"/>
     </queries>
 </manifest>

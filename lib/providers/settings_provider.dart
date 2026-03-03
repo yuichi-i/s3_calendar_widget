@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/app_settings.dart';
+import '../services/google_calendar_service.dart';
 
 class SettingsProvider extends ChangeNotifier {
   AppSettings _settings = const AppSettings();
+  final GoogleCalendarService _googleCalendarService = GoogleCalendarService();
 
   AppSettings get settings => _settings;
   Color get backgroundColor => _settings.backgroundColor;
@@ -13,8 +15,15 @@ class SettingsProvider extends ChangeNotifier {
   /// 日曜・祝日の文字色
   Color get sundayHolidayColor => _settings.sundayHolidayColor;
 
+  /// Googleカレンダー連携が有効かどうか
+  bool get googleCalendarEnabled => _googleCalendarService.isSignedIn;
+  /// 連携中のアカウントメールアドレス
+  String? get googleAccountEmail => _googleCalendarService.currentUser?.email;
+
   Future<void> init() async {
     _settings = await AppSettings.load();
+    // アプリ起動時にサインイン状態を復元
+    await _googleCalendarService.restoreSignIn();
     notifyListeners();
   }
 
@@ -45,6 +54,19 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setSundayHolidayColor(Color color) async {
     _settings = _settings.copyWith(sundayHolidayColor: color);
     await _settings.save();
+    notifyListeners();
+  }
+
+  /// Googleカレンダーにサインインする
+  Future<bool> signInGoogle() async {
+    final account = await _googleCalendarService.signIn();
+    notifyListeners();
+    return account != null;
+  }
+
+  /// Googleカレンダーからサインアウトする
+  Future<void> signOutGoogle() async {
+    await _googleCalendarService.signOut();
     notifyListeners();
   }
 }

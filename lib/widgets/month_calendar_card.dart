@@ -4,6 +4,7 @@ import '../models/calendar_cell.dart';
 import '../models/holiday.dart';
 import '../services/calendar_service.dart';
 import '../services/holiday_service.dart';
+import '../services/google_calendar_service.dart';
 import 'day_cell_widget.dart';
 
 class MonthCalendarCard extends StatefulWidget {
@@ -15,6 +16,8 @@ class MonthCalendarCard extends StatefulWidget {
   final Color saturdayColor;
   /// 日曜・祝日の文字色
   final Color sundayHolidayColor;
+  /// Googleカレンダー連携が有効かどうか
+  final bool googleCalendarEnabled;
 
   const MonthCalendarCard({
     super.key,
@@ -24,6 +27,7 @@ class MonthCalendarCard extends StatefulWidget {
     required this.backgroundColor,
     this.saturdayColor = const Color(0xFF4488FF),
     this.sundayHolidayColor = const Color(0xFFFF4444),
+    this.googleCalendarEnabled = false,
   });
 
   @override
@@ -33,9 +37,16 @@ class MonthCalendarCard extends StatefulWidget {
 class _MonthCalendarCardState extends State<MonthCalendarCard> {
   final CalendarService _calendarService = CalendarService();
   final HolidayService _holidayService = HolidayService();
+  final GoogleCalendarService _googleCalendarService = GoogleCalendarService();
 
   List<CalendarCell> _cells = [];
   bool _loading = true;
+  /// 当月の日付文字列（yyyy-MM-dd）→ イベント色リスト
+  Map<String, List<Color>> _eventColors = {};
+  /// 前月の日付文字列（yyyy-MM-dd）→ イベント色リスト（薄色用）
+  Map<String, List<Color>> _prevEventColors = {};
+  /// 次月の日付文字列（yyyy-MM-dd）→ イベント色リスト（薄色用）
+  Map<String, List<Color>> _nextEventColors = {};
 
   @override
   void initState() {
@@ -52,6 +63,10 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
         oldWidget.saturdayColor != widget.saturdayColor ||
         oldWidget.sundayHolidayColor != widget.sundayHolidayColor) {
       _loadCells();
+    }
+    // Googleカレンダー連携のオン/オフが変わった場合もリロード
+    if (oldWidget.googleCalendarEnabled != widget.googleCalendarEnabled) {
+      _loadEvents();
     }
   }
 
@@ -73,7 +88,43 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
         _loading = false;
       });
     }
+    // セル読み込み後にイベントも取得
+    await _loadEvents();
   }
+
+  Future<void> _loadEvents() async {
+    if (!widget.googleCalendarEnabled || !_googleCalendarService.isSignedIn) {
+      if (mounted) {
+        setState(() {
+          _eventColors = {};
+          _prevEventColors = {};
+          _nextEventColors = {};
+        });
+      }
+      return;
+    }
+
+    // 当月・前月・次月を並行取得
+    final prevMonth = DateTime(widget.year, widget.month - 1);
+    final nextMonth = DateTime(widget.year, widget.month + 1);
+    final results = await Future.wait([
+      _googleCalendarService.fetchEventsForMonth(widget.year, widget.month),
+      _googleCalendarService.fetchEventsForMonth(prevMonth.year, prevMonth.month),
+      _googleCalendarService.fetchEventsForMonth(nextMonth.year, nextMonth.month),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _eventColors = results[0];
+        _prevEventColors = results[1];
+        _nextEventColors = results[2];
+      });
+    }
+  }
+
+  /// 日付キー文字列を生成（yyyy-MM-dd）
+  String _dateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +152,7 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
               ),
             ),
           ),
-          // 曜日ヘッダー行（上下パディングを追加して間隔を広げる）
+          // 曜日ヘッダー行
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
@@ -155,11 +206,59 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
     final rows = <Widget>[];
     for (int i = 0; i < 35; i += 7) {
       final weekCells = _cells.sublist(i, (i + 7).clamp(0, _cells.length));
+
+      // この週の有効な日付リスト（当月のみ）を取得（空セルのフォールバック用）
+      final validDatesInWeek = weekCells
+          .where((c) => c.date != null && !c.isAdjacentMonth)
+          .map((c) => c.date!)
+          .toList();
+
       rows.add(Expanded(
         child: Row(
           children: weekCells.map((cell) {
+            final isCurrentMonth = cell.date != null && !cell.isAdjacentMonth;
+            final isAdjacentWithDate = cell.date != null && cell.isAdjacentMonth;
+
+            List<Color> colors;
+            if (isCurrentMonth) {
+              // 当月: 通常色
+              colors = _eventColors[_dateKey(cell.date!)] ?? [];
+            } else if (isAdjacentWithDate) {
+              // 前月・次月: 薄い色で表示
+              final key = _dateKey(cell.date!);
+              final isPrev = cell.date!.month != widget.month &&
+                  (cell.date!.year < widget.year ||
+                      (cell.date!.year == widget.year && cell.date!.month < widget.month));
+              final base = isPrev
+                  ? (_prevEventColors[key] ?? [])
+                  : (_nextEventColors[key] ?? []);
+              // 透明度 40% で薄くする
+              colors = base.map((c) => c.withValues(alpha: 0.4)).toList();
+            } else {
+              // 空セル
+              colors = [];
+            }
+
+            // タップ時に開く日付:
+            // - 当月セル: その日付
+            // - 隣月セル: その日付（隣月でも正しい日付に飛ぶ）
+            // - 空セル: 同週の当月内の直近日付
+            DateTime? tapDate;
+            if (cell.date != null) {
+              tapDate = cell.date;
+            } else if (validDatesInWeek.isNotEmpty) {
+              tapDate = validDatesInWeek.first;
+            }
+
             return Expanded(
-              child: DayCellWidget(cell: cell, fontSize: 12),
+              child: DayCellWidget(
+                cell: cell,
+                fontSize: 12,
+                eventColors: colors,
+                onTap: tapDate != null
+                    ? () => _googleCalendarService.openCalendarOnDate(tapDate!)
+                    : null,
+              ),
             );
           }).toList(),
         ),

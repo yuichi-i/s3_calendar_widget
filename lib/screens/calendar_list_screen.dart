@@ -191,13 +191,14 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
             settings.startOnMonday,
             settings.saturdayColor,
             settings.sundayHolidayColor,
+            settingsProvider.googleCalendarEnabled,
           ),
         );
       },
     );
   }
 
-  Widget _buildCalendarGrid(Color bgColor, bool startOnMonday, Color saturdayColor, Color sundayHolidayColor) {
+  Widget _buildCalendarGrid(Color bgColor, bool startOnMonday, Color saturdayColor, Color sundayHolidayColor, bool googleCalendarEnabled) {
     final now = DateTime.now();
 
     // 2列グリッドで月カレンダーを表示
@@ -236,6 +237,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
             backgroundColor: bgColor,
             saturdayColor: saturdayColor,
             sundayHolidayColor: sundayHolidayColor,
+            googleCalendarEnabled: googleCalendarEnabled,
           ),
         );
       },

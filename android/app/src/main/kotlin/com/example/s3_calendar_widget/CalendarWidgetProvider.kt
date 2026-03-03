@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+
 @SuppressLint("NewApi")
 class CalendarWidgetProvider : AppWidgetProvider() {
 
@@ -41,11 +42,13 @@ class CalendarWidgetProvider : AppWidgetProvider() {
     companion object {
         private const val TAG = "CalendarWidget"
         private const val PREFS_NAME = "HomeWidgetPreferences"
-        private const val KEY_CALENDAR_DATA   = "calendar_widget_data"
-        private const val KEY_BG_COLOR        = "widget_bg_color"
-        private const val KEY_START_ON_MONDAY = "widget_start_on_monday"
-        private const val KEY_DOW_HEADERS     = "widget_dow_headers"
-        private const val KEY_HOLIDAY_DATES   = "widget_holiday_dates"
+        private const val KEY_CALENDAR_DATA        = "calendar_widget_data"
+        private const val KEY_BG_COLOR             = "widget_bg_color"
+        private const val KEY_START_ON_MONDAY      = "widget_start_on_monday"
+        private const val KEY_DOW_HEADERS          = "widget_dow_headers"
+        private const val KEY_HOLIDAY_DATES        = "widget_holiday_dates"
+        private const val KEY_SATURDAY_COLOR       = "widget_saturday_color"
+        private const val KEY_SUNDAY_HOLIDAY_COLOR = "widget_sunday_holiday_color"
 
         // 5 rows x 7 cols = 35 cells
         private val DAY_ID_MAP: Array<IntArray> by lazy { arrayOf(
@@ -69,10 +72,6 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             R.id.tv_dow0, R.id.tv_dow1, R.id.tv_dow2, R.id.tv_dow3, R.id.tv_dow4, R.id.tv_dow5, R.id.tv_dow6
         )}
 
-        private val COLOR_RED       = Color.parseColor("#FFFF4444")
-        private val COLOR_BLUE      = Color.parseColor("#FF4488FF")
-        private val COLOR_DIM_RED   = Color.parseColor("#66FF4444")
-        private val COLOR_DIM_BLUE  = Color.parseColor("#664488FF")
         private val COLOR_DIM_WHITE = Color.parseColor("#66FFFFFF")
 
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
@@ -85,6 +84,22 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                     else    -> Color.BLACK
                 }
             } catch (_: Exception) { Color.BLACK }
+
+            // 土曜色・日曜/祝日色（未設定時はデフォルト値を使用）
+            val saturdayColor = try {
+                when (val raw = prefs.all[KEY_SATURDAY_COLOR]) {
+                    is Int  -> raw
+                    is Long -> raw.toInt()
+                    else    -> Color.parseColor("#FF4488FF")
+                }
+            } catch (_: Exception) { Color.parseColor("#FF4488FF") }
+            val sundayHolidayColor = try {
+                when (val raw = prefs.all[KEY_SUNDAY_HOLIDAY_COLOR]) {
+                    is Int  -> raw
+                    is Long -> raw.toInt()
+                    else    -> Color.parseColor("#FFFF4444")
+                }
+            } catch (_: Exception) { Color.parseColor("#FFFF4444") }
 
             val startOnMonday    = prefs.getBoolean(KEY_START_ON_MONDAY, false)
             val calendarDataJson = prefs.getString(KEY_CALENDAR_DATA, null)
@@ -119,10 +134,10 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
             val holidaySet = parseHolidayDates(holidayDatesJson)
             if (calendarDataJson != null) {
-                try { renderFromJson(context, views, calendarDataJson, dowHeadersJson, startOnMonday, holidaySet, circleBitmap) }
-                catch (e: Exception) { Log.w(TAG, "renderFromJson failed", e); renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap) }
+                try { renderFromJson(context, views, calendarDataJson, dowHeadersJson, startOnMonday, holidaySet, circleBitmap, saturdayColor, sundayHolidayColor) }
+                catch (e: Exception) { Log.w(TAG, "renderFromJson failed", e); renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap, saturdayColor, sundayHolidayColor) }
             } else {
-                renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap)
+                renderCurrentMonth(context, views, startOnMonday, holidaySet, circleBitmap, saturdayColor, sundayHolidayColor)
             }
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -158,7 +173,8 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
         private fun renderFromJson(
             context: Context, views: RemoteViews, calendarDataJson: String, dowHeadersJson: String?,
-            startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap
+            startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap,
+            saturdayColor: Int, sundayHolidayColor: Int
         ) {
             val dataArray = JSONArray(calendarDataJson)
             views.setTextViewText(R.id.tv_month_year, extractMonthYear(dataArray))
@@ -166,8 +182,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             val headers = if (dowHeadersJson != null) {
                 val arr = JSONArray(dowHeadersJson); Array(7) { i -> if (i < arr.length()) arr.getString(i) else "" }
             } else defaultDowHeaders(startOnMonday)
-            val dowColors = buildDowColors(startOnMonday)
+            val dowColors = buildDowColors(startOnMonday, saturdayColor, sundayHolidayColor)
             for (i in 0..6) { views.setTextViewText(DOW_ID_MAP[i], headers[i]); views.setTextColor(DOW_ID_MAP[i], dowColors[i]) }
+
+            // 土曜・日曜/祝日の薄い色（隣接月用）
+            val dimSatColor = applyAlpha(saturdayColor, 0x66)
+            val dimSunHolColor = applyAlpha(sundayHolidayColor, 0x66)
 
             val todayCal = Calendar.getInstance()
             val todayKey = formatDateKey(todayCal.get(Calendar.YEAR), todayCal.get(Calendar.MONTH) + 1, todayCal.get(Calendar.DAY_OF_MONTH))
@@ -190,12 +210,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
 
                     val isToday = !isAdjacent && dateStr.take(10) == todayKey
                     val todayTextColor = when (effectiveColorType) {
-                        "sunday", "holiday" -> COLOR_RED
-                        "saturday"          -> COLOR_BLUE
+                        "sunday", "holiday" -> sundayHolidayColor
+                        "saturday"          -> saturdayColor
                         else                -> Color.BLACK
                     }
                     views.setTextViewText(viewId, dayText)
-                    views.setTextColor(viewId, if (isToday) todayTextColor else resolveColor(effectiveColorType, isAdjacent))
+                    views.setTextColor(viewId, if (isToday) todayTextColor else resolveColor(effectiveColorType, isAdjacent, saturdayColor, sundayHolidayColor, dimSatColor, dimSunHolColor))
                     setTodayMark(views, bgViewId, isToday, circleBitmap)
                 } else {
                     views.setTextViewText(viewId, "")
@@ -204,7 +224,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             }
         }
 
-        private fun renderCurrentMonth(context: Context, views: RemoteViews, startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap) {
+        private fun renderCurrentMonth(context: Context, views: RemoteViews, startOnMonday: Boolean, holidaySet: Set<String>, circleBitmap: Bitmap, saturdayColor: Int, sundayHolidayColor: Int) {
             val cal     = Calendar.getInstance()
             val year    = cal.get(Calendar.YEAR)
             val month   = cal.get(Calendar.MONTH)
@@ -212,8 +232,12 @@ class CalendarWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.tv_month_year, "${year}\u5E74 ${month + 1}\u6708")
 
             val headers   = defaultDowHeaders(startOnMonday)
-            val dowColors = buildDowColors(startOnMonday)
+            val dowColors = buildDowColors(startOnMonday, saturdayColor, sundayHolidayColor)
             for (i in 0..6) { views.setTextViewText(DOW_ID_MAP[i], headers[i]); views.setTextColor(DOW_ID_MAP[i], dowColors[i]) }
+
+            // 薄い色（隣接月用）
+            val dimSatColor = applyAlpha(saturdayColor, 0x66)
+            val dimSunHolColor = applyAlpha(sundayHolidayColor, 0x66)
 
             cal.set(year, month, 1)
             val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
@@ -232,7 +256,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         val prevDay = prevDaysInMonth - (offset - 1 - cellIndex)
                         val dow = getDayOfWeek(prevCal.get(Calendar.YEAR), prevCal.get(Calendar.MONTH), prevDay)
                         views.setTextViewText(viewId, prevDay.toString())
-                        views.setTextColor(viewId, dimColorForDow(dow))
+                        views.setTextColor(viewId, dimColorForDow(dow, dimSatColor, dimSunHolColor))
                         setTodayMark(views, bgViewId, false, circleBitmap)
                     }
                     currentDay <= daysInMonth -> {
@@ -240,11 +264,11 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                         val dateKey  = formatDateKey(year, month + 1, currentDay)
                         val isHoliday = holidaySet.contains(dateKey)
                         val isToday  = currentDay == todayDay
-                        val normalColor = if (isHoliday) COLOR_RED else brightColorForDow(dow)
+                        val normalColor = if (isHoliday) sundayHolidayColor else brightColorForDow(dow, saturdayColor, sundayHolidayColor)
                         val todayTextColor = when {
-                            isHoliday                -> COLOR_RED
-                            dow == Calendar.SUNDAY   -> COLOR_RED
-                            dow == Calendar.SATURDAY -> COLOR_BLUE
+                            isHoliday                -> sundayHolidayColor
+                            dow == Calendar.SUNDAY   -> sundayHolidayColor
+                            dow == Calendar.SATURDAY -> saturdayColor
                             else                     -> Color.BLACK
                         }
                         views.setTextViewText(viewId, currentDay.toString())
@@ -255,7 +279,7 @@ class CalendarWidgetProvider : AppWidgetProvider() {
                     else -> {
                         val dow = getDayOfWeek(year, month + 1, nextDay)
                         views.setTextViewText(viewId, nextDay.toString())
-                        views.setTextColor(viewId, dimColorForDow(dow))
+                        views.setTextColor(viewId, dimColorForDow(dow, dimSatColor, dimSunHolColor))
                         setTodayMark(views, bgViewId, false, circleBitmap)
                         nextDay++
                     }
@@ -264,20 +288,23 @@ class CalendarWidgetProvider : AppWidgetProvider() {
         }
 
         // helpers
+        /** ARGBカラーのアルファ値を差し替えて返す */
+        private fun applyAlpha(color: Int, alpha: Int): Int =
+            (color and 0x00FFFFFF) or (alpha shl 24)
         private fun getDayOfWeek(year: Int, month: Int, day: Int): Int =
             Calendar.getInstance().apply { set(year, month, day) }.get(Calendar.DAY_OF_WEEK)
-        private fun brightColorForDow(dow: Int) = when (dow) { Calendar.SUNDAY -> COLOR_RED; Calendar.SATURDAY -> COLOR_BLUE; else -> Color.WHITE }
-        private fun dimColorForDow(dow: Int) = when (dow) { Calendar.SUNDAY -> COLOR_DIM_RED; Calendar.SATURDAY -> COLOR_DIM_BLUE; else -> COLOR_DIM_WHITE }
-        private fun resolveColor(colorType: String, isAdjacent: Boolean): Int = if (isAdjacent) {
-            when (colorType) { "sunday", "holiday" -> COLOR_DIM_RED; "saturday" -> COLOR_DIM_BLUE; else -> COLOR_DIM_WHITE }
+        private fun brightColorForDow(dow: Int, saturdayColor: Int, sundayHolidayColor: Int) = when (dow) { Calendar.SUNDAY -> sundayHolidayColor; Calendar.SATURDAY -> saturdayColor; else -> Color.WHITE }
+        private fun dimColorForDow(dow: Int, dimSatColor: Int, dimSunHolColor: Int) = when (dow) { Calendar.SUNDAY -> dimSunHolColor; Calendar.SATURDAY -> dimSatColor; else -> COLOR_DIM_WHITE }
+        private fun resolveColor(colorType: String, isAdjacent: Boolean, saturdayColor: Int, sundayHolidayColor: Int, dimSatColor: Int, dimSunHolColor: Int): Int = if (isAdjacent) {
+            when (colorType) { "sunday", "holiday" -> dimSunHolColor; "saturday" -> dimSatColor; else -> COLOR_DIM_WHITE }
         } else {
-            when (colorType) { "sunday", "holiday" -> COLOR_RED; "saturday" -> COLOR_BLUE; else -> Color.WHITE }
+            when (colorType) { "sunday", "holiday" -> sundayHolidayColor; "saturday" -> saturdayColor; else -> Color.WHITE }
         }
         private fun defaultDowHeaders(startOnMonday: Boolean) =
             if (startOnMonday) arrayOf("\u6708","\u706B","\u6C34","\u6728","\u91D1","\u571F","\u65E5") else arrayOf("\u65E5","\u6708","\u706B","\u6C34","\u6728","\u91D1","\u571F")
-        private fun buildDowColors(startOnMonday: Boolean): IntArray =
-            if (startOnMonday) intArrayOf(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, COLOR_BLUE, COLOR_RED)
-            else intArrayOf(COLOR_RED, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, COLOR_BLUE)
+        private fun buildDowColors(startOnMonday: Boolean, saturdayColor: Int, sundayHolidayColor: Int): IntArray =
+            if (startOnMonday) intArrayOf(Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, saturdayColor, sundayHolidayColor)
+            else intArrayOf(sundayHolidayColor, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, Color.WHITE, saturdayColor)
         private fun extractMonthYear(dataArray: JSONArray): String {
             for (i in 0 until dataArray.length()) {
                 val cell = dataArray.getJSONObject(i)

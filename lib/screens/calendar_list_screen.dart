@@ -186,13 +186,18 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
               ),
             ],
           ),
-          body: _buildCalendarGrid(settings.backgroundColor, settings.startOnMonday),
+          body: _buildCalendarGrid(
+            settings.backgroundColor,
+            settings.startOnMonday,
+            settings.saturdayColor,
+            settings.sundayHolidayColor,
+          ),
         );
       },
     );
   }
 
-  Widget _buildCalendarGrid(Color bgColor, bool startOnMonday) {
+  Widget _buildCalendarGrid(Color bgColor, bool startOnMonday, Color saturdayColor, Color sundayHolidayColor) {
     final now = DateTime.now();
 
     // 2列グリッドで月カレンダーを表示
@@ -229,6 +234,8 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
             month: month.month,
             startOnMonday: startOnMonday,
             backgroundColor: bgColor,
+            saturdayColor: saturdayColor,
+            sundayHolidayColor: sundayHolidayColor,
           ),
         );
       },

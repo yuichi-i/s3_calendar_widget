@@ -8,12 +8,18 @@ class CalendarCell {
   final String? holidayName;
   /// 前月または次月の日付かどうか
   final bool isAdjacentMonth;
+  /// 土曜日の文字色（外部から設定可能）
+  final Color saturdayColor;
+  /// 日曜・祝日の文字色（外部から設定可能）
+  final Color sundayHolidayColor;
 
   const CalendarCell({
     this.date,
     required this.dayType,
     this.holidayName,
     this.isAdjacentMonth = false,
+    this.saturdayColor = const Color(0xFF4488FF),
+    this.sundayHolidayColor = const Color(0xFFFF4444),
   });
 
   bool get isEmpty => date == null;
@@ -23,9 +29,9 @@ class CalendarCell {
     switch (dayType) {
       case DayType.sunday:
       case DayType.holiday:
-        return const Color(0xFFFF4444);
+        return sundayHolidayColor;
       case DayType.saturday:
-        return const Color(0xFF4488FF);
+        return saturdayColor;
       case DayType.weekday:
         return Colors.white;
     }
@@ -36,9 +42,9 @@ class CalendarCell {
     switch (dayType) {
       case DayType.sunday:
       case DayType.holiday:
-        return const Color(0x66FF4444);
+        return sundayHolidayColor.withValues(alpha: 0.4);
       case DayType.saturday:
-        return const Color(0x664488FF);
+        return saturdayColor.withValues(alpha: 0.4);
       case DayType.weekday:
         return const Color(0x66FFFFFF);
     }

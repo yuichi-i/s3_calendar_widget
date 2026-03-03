@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import '../models/calendar_cell.dart';
 import '../models/holiday.dart';
 
@@ -9,6 +10,8 @@ class CalendarService {
     required int month,
     required bool startOnMonday,
     required Map<String, Holiday> holidays,
+    Color saturdayColor = const Color(0xFF4488FF),
+    Color sundayHolidayColor = const Color(0xFFFF4444),
   }) {
     final List<CalendarCell> cells = [];
 
@@ -34,6 +37,8 @@ class CalendarService {
           date: date,
           dayType: _dayType(date, {}),
           isAdjacentMonth: true,
+          saturdayColor: saturdayColor,
+          sundayHolidayColor: sundayHolidayColor,
         ));
       }
     }
@@ -54,6 +59,8 @@ class CalendarService {
         dayType: dayType,
         holidayName: holiday?.name,
         isAdjacentMonth: false,
+        saturdayColor: saturdayColor,
+        sundayHolidayColor: sundayHolidayColor,
       ));
     }
 
@@ -65,6 +72,8 @@ class CalendarService {
         date: date,
         dayType: _dayType(date, {}),
         isAdjacentMonth: true,
+        saturdayColor: saturdayColor,
+        sundayHolidayColor: sundayHolidayColor,
       ));
     }
 

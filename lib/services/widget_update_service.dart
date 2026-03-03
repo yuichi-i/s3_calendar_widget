@@ -55,7 +55,10 @@ class WidgetUpdateService {
 
     // home_widget経由でAndroidに保存
     final bgColorValue = settings.effectiveBackgroundColor.toARGB32().toSigned(32);
+    final satColorValue = settings.saturdayColor.toARGB32().toSigned(32);
+    final sunHolColorValue = settings.sundayHolidayColor.toARGB32().toSigned(32);
     debugPrint('[WidgetUpdate] saving bg_color=$bgColorValue (hex: 0x${bgColorValue.toRadixString(16)})');
+    debugPrint('[WidgetUpdate] saving sat_color=$satColorValue, sun_holiday_color=$sunHolColorValue');
     await HomeWidget.saveWidgetData<String>(
         'calendar_widget_data', jsonEncode(cellData));
     await HomeWidget.saveWidgetData<int>(
@@ -66,6 +69,10 @@ class WidgetUpdateService {
         'widget_dow_headers', jsonEncode(dowHeaders));
     await HomeWidget.saveWidgetData<String>(
         'widget_holiday_dates', jsonEncode(allHolidayDates));
+    await HomeWidget.saveWidgetData<int>(
+        'widget_saturday_color', satColorValue);
+    await HomeWidget.saveWidgetData<int>(
+        'widget_sunday_holiday_color', sunHolColorValue);
 
     // ウィジェット更新をトリガー
     await HomeWidget.updateWidget(

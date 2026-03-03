@@ -11,6 +11,10 @@ class MonthCalendarCard extends StatefulWidget {
   final int month;
   final bool startOnMonday;
   final Color backgroundColor;
+  /// 土曜日の文字色
+  final Color saturdayColor;
+  /// 日曜・祝日の文字色
+  final Color sundayHolidayColor;
 
   const MonthCalendarCard({
     super.key,
@@ -18,6 +22,8 @@ class MonthCalendarCard extends StatefulWidget {
     required this.month,
     required this.startOnMonday,
     required this.backgroundColor,
+    this.saturdayColor = const Color(0xFF4488FF),
+    this.sundayHolidayColor = const Color(0xFFFF4444),
   });
 
   @override
@@ -42,7 +48,9 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.year != widget.year ||
         oldWidget.month != widget.month ||
-        oldWidget.startOnMonday != widget.startOnMonday) {
+        oldWidget.startOnMonday != widget.startOnMonday ||
+        oldWidget.saturdayColor != widget.saturdayColor ||
+        oldWidget.sundayHolidayColor != widget.sundayHolidayColor) {
       _loadCells();
     }
   }
@@ -56,6 +64,8 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
       month: widget.month,
       startOnMonday: widget.startOnMonday,
       holidays: holidays,
+      saturdayColor: widget.saturdayColor,
+      sundayHolidayColor: widget.sundayHolidayColor,
     );
     if (mounted) {
       setState(() {
@@ -98,11 +108,11 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
               children: headers.map((h) {
                 Color color = Colors.white;
                 if (widget.startOnMonday) {
-                  if (h == '土') color = const Color(0xFF4488FF);
-                  if (h == '日') color = const Color(0xFFFF4444);
+                  if (h == '土') color = widget.saturdayColor;
+                  if (h == '日') color = widget.sundayHolidayColor;
                 } else {
-                  if (h == '日') color = const Color(0xFFFF4444);
-                  if (h == '土') color = const Color(0xFF4488FF);
+                  if (h == '日') color = widget.sundayHolidayColor;
+                  if (h == '土') color = widget.saturdayColor;
                 }
                 return Expanded(
                   child: Center(

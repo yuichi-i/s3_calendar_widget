@@ -169,6 +169,64 @@ class SettingsScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
+              // 土曜日の文字色設定
+              _SectionHeader(title: '土曜日の文字色'),
+              Card(
+                color: Colors.grey[900],
+                child: ListTile(
+                  title: Text(
+                    '土曜日の色を選択',
+                    style: GoogleFonts.rajdhani(color: Colors.white),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: provider.saturdayColor,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.white38),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right, color: Colors.white54),
+                    ],
+                  ),
+                  onTap: () => _showSaturdayColorPicker(context, provider),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // 日曜・祝日の文字色設定
+              _SectionHeader(title: '日曜日・祝日の文字色'),
+              Card(
+                color: Colors.grey[900],
+                child: ListTile(
+                  title: Text(
+                    '日曜日・祝日の色を選択',
+                    style: GoogleFonts.rajdhani(color: Colors.white),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: provider.sundayHolidayColor,
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.white38),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right, color: Colors.white54),
+                    ],
+                  ),
+                  onTap: () => _showSundayHolidayColorPicker(context, provider),
+                ),
+              ),
+              const SizedBox(height: 24),
               // 色の凡例
               _SectionHeader(title: '色の凡例'),
               Card(
@@ -178,10 +236,10 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _ColorLegendRow(
-                          color: const Color(0xFFFF4444), label: '日曜日・祝日'),
+                          color: provider.sundayHolidayColor, label: '日曜日・祝日'),
                       const SizedBox(height: 8),
                       _ColorLegendRow(
-                          color: const Color(0xFF4488FF), label: '土曜日'),
+                          color: provider.saturdayColor, label: '土曜日'),
                       const SizedBox(height: 8),
                       _ColorLegendRow(color: Colors.white, label: '平日'),
                     ],
@@ -238,15 +296,88 @@ class SettingsScreen extends StatelessWidget {
                 style: GoogleFonts.rajdhani(color: Colors.white54)),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white24,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
             onPressed: () async {
               await provider.setBackgroundColor(pickedColor);
               if (ctx.mounted) Navigator.pop(ctx);
             },
-            child: Text('決定',
-                style: GoogleFonts.rajdhani(color: Colors.white)),
+            child: Text('決定', style: GoogleFonts.rajdhani(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSaturdayColorPicker(BuildContext context, SettingsProvider provider) {
+    Color pickedColor = provider.saturdayColor;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          '土曜日の色を選択',
+          style: GoogleFonts.rajdhani(color: Colors.white),
+        ),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: pickedColor,
+            onColorChanged: (c) => pickedColor = c,
+            enableAlpha: false,
+            labelTypes: const [],
+            pickerAreaHeightPercent: 0.8,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('キャンセル',
+                style: GoogleFonts.rajdhani(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
+            onPressed: () async {
+              await provider.setSaturdayColor(pickedColor);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: Text('決定', style: GoogleFonts.rajdhani(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSundayHolidayColorPicker(BuildContext context, SettingsProvider provider) {
+    Color pickedColor = provider.sundayHolidayColor;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: Text(
+          '日曜日・祝日の色を選択',
+          style: GoogleFonts.rajdhani(color: Colors.white),
+        ),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: pickedColor,
+            onColorChanged: (c) => pickedColor = c,
+            enableAlpha: false,
+            labelTypes: const [],
+            pickerAreaHeightPercent: 0.8,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('キャンセル',
+                style: GoogleFonts.rajdhani(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
+            onPressed: () async {
+              await provider.setSundayHolidayColor(pickedColor);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: Text('決定', style: GoogleFonts.rajdhani(color: Colors.white)),
           ),
         ],
       ),

@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 
-/// バッテリー最適化除外を操作するMethodChannel
+/// バッテリー最適化状態を確認するMethodChannel（設定の起動には使用しない）
 const _batteryChannel = MethodChannel('com.example.s3_calendar_widget/battery');
 
 class SettingsScreen extends StatelessWidget {
@@ -481,23 +481,13 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
     }
   }
 
-  Future<void> _requestExemption() async {
-    try {
-      await _batteryChannel.invokeMethod('requestIgnoreBatteryOptimizations');
-      // 設定画面から戻ってきたら状態を再確認
-      await Future.delayed(const Duration(seconds: 1));
-      await _checkStatus();
-    } catch (_) {}
-  }
-
   @override
   Widget build(BuildContext context) {
-    // 状態不明（Android以外など）の場合は非表示
-    if (_isIgnoring == null) return const SizedBox.shrink();
+    // 状態不明（Android以外など）またはOKの場合は非表示
+    if (_isIgnoring == null || _isIgnoring == true) return const SizedBox.shrink();
 
-    final isOk = _isIgnoring == true;
     return Card(
-      color: isOk ? Colors.grey[900] : Colors.orange[900]?.withValues(alpha: 0.6),
+      color: Colors.orange[900]?.withValues(alpha: 0.6),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -505,9 +495,9 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
           children: [
             Row(
               children: [
-                Icon(
-                  isOk ? Icons.check_circle_outline : Icons.battery_alert,
-                  color: isOk ? Colors.greenAccent : Colors.orange,
+                const Icon(
+                  Icons.battery_alert,
+                  color: Colors.orange,
                   size: 20,
                 ),
                 const SizedBox(width: 8),
@@ -523,32 +513,15 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
             ),
             const SizedBox(height: 8),
             Text(
-              isOk
-                  ? '日付が変わると自動でウィジェットが更新されます。'
-                  : '省電力設定がオンのため、日付変更時のウィジェット自動更新が遅延する可能性があります。\n'
-                    '下のボタンからこのアプリのバッテリー最適化を除外することを推奨します。',
+              '省電力設定がオンのため、日付変更時のウィジェット自動更新が遅延する可能性があります。\n\n'
+              '【設定手順】\n'
+              'Android設定 → アプリ → このアプリ → バッテリー →「制限なし」または「最適化しない」を選択してください。\n\n'
+              '（設定メニューの名称は端末・OSによって異なります）',
               style: GoogleFonts.rajdhani(
-                color: isOk ? Colors.white54 : Colors.orange[100],
+                color: Colors.orange[100],
                 fontSize: 13,
               ),
             ),
-            if (!isOk) ...[
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange[800],
-                  ),
-                  icon: const Icon(Icons.settings, size: 16),
-                  label: Text(
-                    'バッテリー最適化を除外する',
-                    style: GoogleFonts.rajdhani(color: Colors.white),
-                  ),
-                  onPressed: _requestExemption,
-                ),
-              ),
-            ],
           ],
         ),
       ),

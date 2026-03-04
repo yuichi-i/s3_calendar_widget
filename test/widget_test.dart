@@ -1,30 +1,29 @@
-﻿// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:s3_calendar_widget/main.dart';
+import 'package:s3_calendar_widget/models/app_settings.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('AppSettingsのデフォルト値が正しい', () {
+    const settings = AppSettings();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(settings.backgroundColor, Colors.black);
+    expect(settings.startOnMonday, false);
+    expect(settings.backgroundOpacity, 0.85);
+    expect(settings.saturdayColor, const Color(0xFF4488FF));
+    expect(settings.sundayHolidayColor, const Color(0xFFFF4444));
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  test('copyWithで指定項目だけ更新できる', () {
+    const base = AppSettings();
+    final updated = base.copyWith(
+      startOnMonday: true,
+      backgroundOpacity: 0.5,
+    );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(updated.startOnMonday, true);
+    expect(updated.backgroundOpacity, 0.5);
+    expect(updated.backgroundColor, base.backgroundColor);
+    expect(updated.saturdayColor, base.saturdayColor);
+    expect(updated.sundayHolidayColor, base.sundayHolidayColor);
   });
 }

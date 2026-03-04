@@ -29,10 +29,14 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
   late List<DateTime> _months;
   late ScrollController _scrollController;
 
-  // 一度に読み込む月数（初期: 前後6ヶ月）
+  // 一度に読み込む月数（初期: 前後表示を含む偶数件）
   static const int _initialMonthsEach = 6;
   // 追加読み込み単位（クッション経由で追加する月数）
   static const int _loadMoreCount = 6;
+  // バウンド時に追加読み込みを開始するオーバースクロール量
+  static const double _overscrollTriggerOffset = 90.0;
+  // バウンド解除後の再発火を許可する戻り量
+  static const double _overscrollResetOffset = 4.0;
 
   // 今月が何番目のインデックスか
   late int _currentMonthIndex;
@@ -44,6 +48,9 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
   // 過去方向・未来方向のクッション追加中フラグ（二重発火防止）
   bool _loadingPast = false;
   bool _loadingFuture = false;
+  // バウンド中の連続発火を防ぐフラグ
+  bool _pastOverscrollHandled = false;
+  bool _futureOverscrollHandled = false;
 
   @override
   void initState() {
@@ -51,7 +58,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     final now = DateTime.now();
     _months = _generateMonths(
       DateTime(now.year, now.month - _initialMonthsEach),
-      _initialMonthsEach * 2 + 1,
+      _initialMonthsEach * 2,
     );
     // 今月のインデックス = _initialMonthsEach（前6ヶ月スタートなので6番目）
     _currentMonthIndex = _initialMonthsEach;
@@ -100,16 +107,39 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     return List.generate(count, (i) => DateTime(start.year, start.month + i));
   }
 
-  /// スクロールリスナー：リスト先頭・末尾のバナー付近に到達したら追加読み込みを発火する
+  /// スクロールリスナー：バウンド時に一定量オーバースクロールしたら追加読み込みを発火する
   void _onScroll() {
     if (!_scrollController.hasClients) return;
     final pos = _scrollController.position;
-    // 先頭バナーが見えている（スクロール位置が先頭に到達）→ 過去方向を追加
-    if (pos.pixels <= pos.minScrollExtent && !_loadingPast) {
+
+    final topOverscroll = (pos.minScrollExtent - pos.pixels).clamp(0.0, double.infinity);
+    final bottomOverscroll = (pos.pixels - pos.maxScrollExtent).clamp(0.0, double.infinity);
+    final isPullingDown = pos.userScrollDirection == ScrollDirection.forward;
+    final isPullingUp = pos.userScrollDirection == ScrollDirection.reverse;
+
+    // 通常範囲付近へ戻ったら次回のバウンド発火を許可
+    if (topOverscroll <= _overscrollResetOffset) {
+      _pastOverscrollHandled = false;
+    }
+    if (bottomOverscroll <= _overscrollResetOffset) {
+      _futureOverscrollHandled = false;
+    }
+
+    // 先頭で一定量バウンドし、下方向へ引っ張っている時だけ過去方向を追加
+    if (topOverscroll >= _overscrollTriggerOffset &&
+        isPullingDown &&
+        !_loadingPast &&
+        !_pastOverscrollHandled) {
+      _pastOverscrollHandled = true;
       _loadPastMonths();
     }
-    // 末尾バナーが見えている（スクロール位置が末尾に到達）→ 未来方向を追加
-    if (pos.pixels >= pos.maxScrollExtent && !_loadingFuture) {
+
+    // 末尾で一定量バウンドし、上方向へ引っ張っている時だけ未来方向を追加
+    if (bottomOverscroll >= _overscrollTriggerOffset &&
+        isPullingUp &&
+        !_loadingFuture &&
+        !_futureOverscrollHandled) {
+      _futureOverscrollHandled = true;
       _loadFutureMonths();
     }
   }
@@ -380,9 +410,8 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     return CustomScrollView(
       key: _scrollViewKey,
       controller: _scrollController,
-      // フリング後にリスト端で自動スクロールが止まるよう ClampingScrollPhysics を使用
-      // （OverscrollBehavior によるバウンスで端バナーに触れても月は増えない）
-      physics: const ClampingScrollPhysics(),
+      // AndroidでもiOS風のバウンド挙動で追加読み込みトリガーを統一する
+      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
       slivers: [
         // ── 先頭クッション ──────────────────────────────
         SliverToBoxAdapter(

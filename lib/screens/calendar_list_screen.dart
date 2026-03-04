@@ -9,8 +9,9 @@ import '../services/widget_update_service.dart';
 import '../widgets/month_calendar_card.dart';
 import 'settings_screen.dart';
 
-// スクロール位置を PageStorage に保存するためのキー
-const _scrollKey = PageStorageKey<String>('calendar_list_scroll');
+// スクロール位置の保存はしない（毎回今月を先頭表示するため PageStorageKey は使わない）
+// CustomScrollView の key として状態リセット用に使用
+final _scrollViewKey = GlobalKey();
 
 class CalendarListScreen extends StatefulWidget {
   const CalendarListScreen({super.key});
@@ -55,7 +56,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     // 今月のインデックス = _initialMonthsEach（前6ヶ月スタートなので6番目）
     _currentMonthIndex = _initialMonthsEach;
 
-    _scrollController = ScrollController();
+    _scrollController = ScrollController()..addListener(_onScroll);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<SettingsProvider>(context, listen: false);
@@ -97,6 +98,20 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
 
   List<DateTime> _generateMonths(DateTime start, int count) {
     return List.generate(count, (i) => DateTime(start.year, start.month + i));
+  }
+
+  /// スクロールリスナー：リスト先頭・末尾のバナー付近に到達したら追加読み込みを発火する
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final pos = _scrollController.position;
+    // 先頭バナーが見えている（スクロール位置が先頭に到達）→ 過去方向を追加
+    if (pos.pixels <= pos.minScrollExtent && !_loadingPast) {
+      _loadPastMonths();
+    }
+    // 末尾バナーが見えている（スクロール位置が末尾に到達）→ 未来方向を追加
+    if (pos.pixels >= pos.maxScrollExtent && !_loadingFuture) {
+      _loadFutureMonths();
+    }
   }
 
   /// 現在表示中の月リスト全体（前後1ヶ月バッファ含む）のイベントを一括取得する
@@ -149,23 +164,24 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     }
   }
 
-  /// 初回表示時（PageStorageに保存された位置がない場合）に今月へジャンプする
+  /// 初回表示時に今月が上端に来るようにジャンプする
   void _scrollToCurrentMonthIfNeeded() {
-    final savedOffset =
-        PageStorage.of(context).readState(context, identifier: _scrollKey);
-    if (savedOffset != null) return;
     if (!_scrollController.hasClients) return;
 
     final screenWidth = MediaQuery.of(context).size.width;
-    const padding = 8.0;
+    // SliverPadding の horizontal: 8 に合わせる
+    const hPadding = 8.0;
     const spacing = 8.0;
     const crossAxisCount = 2;
     final cellWidth =
-        (screenWidth - padding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
+        (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
 
-    // 今月までの各行の高さを合計してスクロールオフセットを計算
-    // +1: 先頭のクッションバナー分のオフセット（バナーなし列は0）
-    double offset = padding;
+    // 先頭クッションバナーの高さ + SliverPadding の top
+    const bannerHeight = 48.0;
+    const sliverPaddingTop = 4.0;
+
+    // 今月カードの行が始まる位置を計算
+    double offset = bannerHeight + sliverPaddingTop;
     for (int i = 0; i < _currentMonthIndex; i += crossAxisCount) {
       final leftM = i < _months.length ? _months[i] : null;
       final rightM = i + 1 < _months.length ? _months[i + 1] : null;
@@ -200,11 +216,55 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       _loadMoreCount,
     );
 
+    // 追加前のスクロール位置を記録
+    final currentOffset = _scrollController.hasClients
+        ? _scrollController.position.pixels
+        : 0.0;
+
     setState(() {
       _months = [...newMonths, ..._months];
       // 先頭に追加した分インデックスをずらす
       _currentMonthIndex += _loadMoreCount;
       _loadingPast = false;
+    });
+
+    // 先頭に月を追加するとスクロール位置がズレるため、追加分の高さ分だけ補正する
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      final screenWidth = MediaQuery.of(context).size.width;
+      const hPadding = 8.0;
+      const spacing = 8.0;
+      const crossAxisCount = 2;
+      final cellWidth =
+          (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
+
+      // 追加した月の合計高さを計算（2列グリッドなのでペアごとに最大値）
+      double addedHeight = 0;
+      final startOnMonday =
+          Provider.of<SettingsProvider>(context, listen: false).startOnMonday;
+      for (int i = 0; i < newMonths.length; i += crossAxisCount) {
+        final leftM = i < newMonths.length ? newMonths[i] : null;
+        final rightM = i + 1 < newMonths.length ? newMonths[i + 1] : null;
+        double rowH = 0;
+        for (final m in [leftM, rightM]) {
+          if (m == null) continue;
+          final rows = _calendarService.getRowCount(
+            year: m.year,
+            month: m.month,
+            startOnMonday: startOnMonday,
+          );
+          final ratio = rows == 6 ? 0.70 : 0.78;
+          final h = cellWidth / ratio;
+          if (h > rowH) rowH = h;
+        }
+        addedHeight += rowH + spacing;
+      }
+
+      // 補正後の位置にジャンプ（ちらつきを防ぐため jumpTo を使用）
+      _scrollController.jumpTo(
+        (currentOffset + addedHeight).clamp(
+            0.0, _scrollController.position.maxScrollExtent),
+      );
     });
 
     // 追加分のイベントを取得
@@ -318,8 +378,11 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
 
     // CustomScrollView + SliverList で先頭・末尾にクッションバナーを挿入する
     return CustomScrollView(
-      key: _scrollKey,
+      key: _scrollViewKey,
       controller: _scrollController,
+      // フリング後にリスト端で自動スクロールが止まるよう ClampingScrollPhysics を使用
+      // （OverscrollBehavior によるバウンスで端バナーに触れても月は増えない）
+      physics: const ClampingScrollPhysics(),
       slivers: [
         // ── 先頭クッション ──────────────────────────────
         SliverToBoxAdapter(

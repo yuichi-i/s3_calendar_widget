@@ -1,0 +1,116 @@
+name: Android CI and Firebase App Distribution
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "配布するビルド種別 (debug / release)"
+        required: true
+        default: "debug"
+        type: choice
+        options:
+          - debug
+          - release
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: "3.41.3"
+
+jobs:
+  test:
+    name: Flutter Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
+
+  build_and_distribute:
+    name: Build APK and Distribute
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        id: build_apk
+        shell: bash
+        run: |
+          BUILD_TYPE="release"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUILD_TYPE="${{ inputs.build_type }}"
+          fi
+
+          if [ "$BUILD_TYPE" = "debug" ]; then
+            flutter build apk --debug
+            echo "apk_path=build/app/outputs/flutter-apk/app-debug.apk" >> "$GITHUB_OUTPUT"
+          else
+            flutter build apk --release
+            echo "apk_path=build/app/outputs/flutter-apk/app-release.apk" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: ${{ steps.build_apk.outputs.apk_path }}
+
+      - name: Distribute to Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID_ANDROID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+          testers: ${{ secrets.FIREBASE_TESTER_EMAILS }}
+          file: ${{ steps.build_apk.outputs.apk_path }}
+          releaseNotes: |
+            GitHub Actions から自動配布
+            repository: ${{ github.repository }}
+            branch: ${{ github.ref_name }}
+            actor: ${{ github.actor }}
+            sha: ${{ github.sha }}
+            run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+

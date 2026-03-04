@@ -11,6 +11,9 @@ class GoogleCalendarService {
   factory GoogleCalendarService() => _instance;
   GoogleCalendarService._internal();
 
+  /// 月ごとのイベントキャッシュ（キー: "yyyy-M"）
+  final Map<String, Map<String, List<Color>>> _eventCache = {};
+
   /// Google Sign-In インスタンス（Calendar の読み取りスコープを要求）
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [gcal.CalendarApi.calendarReadonlyScope],
@@ -39,6 +42,7 @@ class GoogleCalendarService {
   /// サインアウト
   Future<void> signOut() async {
     await _googleSignIn.signOut();
+    _eventCache.clear();
   }
 
   /// サインイン状態を復元（アプリ起動時に呼ぶ）
@@ -51,11 +55,16 @@ class GoogleCalendarService {
     }
   }
 
-  /// 指定月のイベントを取得する
+  /// 指定月のイベントを取得する（キャッシュあり）
   /// 戻り値: 日付文字列（yyyy-MM-dd）→ イベント色リスト のマップ（最大3件/日）
   /// 誕生日カレンダー（#contacts@group.v.calendar.google.com 等）は除外する
   Future<Map<String, List<Color>>> fetchEventsForMonth(int year, int month) async {
     if (!isSignedIn) return {};
+
+    final cacheKey = '$year-$month';
+    if (_eventCache.containsKey(cacheKey)) {
+      return _eventCache[cacheKey]!;
+    }
 
     try {
       final headers = await currentUser!.authHeaders;
@@ -101,11 +110,47 @@ class GoogleCalendarService {
         }
       }
 
+      // 結果をキャッシュに保存
+      _eventCache[cacheKey] = result;
       return result;
     } catch (e) {
       debugPrint('カレンダーイベント取得エラー: $e');
       return {};
     }
+  }
+
+  /// 複数月のイベントをまとめて取得する（未キャッシュ月のみAPIを呼ぶ）
+  /// 戻り値: "yyyy-M" → イベントマップ
+  Future<Map<String, Map<String, List<Color>>>> fetchEventsForMonths(
+      List<DateTime> months) async {
+    if (!isSignedIn) return {};
+
+    // 未キャッシュの月だけAPIで取得（最大5並行）
+    final uncachedMonths =
+        months.where((m) => !_eventCache.containsKey('${m.year}-${m.month}')).toList();
+
+    if (uncachedMonths.isNotEmpty) {
+      const batchSize = 5;
+      for (int i = 0; i < uncachedMonths.length; i += batchSize) {
+        final batch = uncachedMonths.skip(i).take(batchSize).toList();
+        await Future.wait(
+          batch.map((m) => fetchEventsForMonth(m.year, m.month)),
+        );
+      }
+    }
+
+    // キャッシュから結果を返す
+    final result = <String, Map<String, List<Color>>>{};
+    for (final m in months) {
+      final key = '${m.year}-${m.month}';
+      result[key] = _eventCache[key] ?? {};
+    }
+    return result;
+  }
+
+  /// イベントキャッシュをクリアする（強制再取得したい場合に使用）
+  void clearCache() {
+    _eventCache.clear();
   }
 
   /// 誕生日・記念日系のカレンダーIDを取得する

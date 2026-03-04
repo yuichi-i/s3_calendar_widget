@@ -18,6 +18,13 @@ class MonthCalendarCard extends StatefulWidget {
   final Color sundayHolidayColor;
   /// Googleカレンダー連携が有効かどうか
   final bool googleCalendarEnabled;
+  /// 当月のイベントデータ（親から渡される。null の場合は自前取得）
+  /// キー: "yyyy-MM-dd"、値: イベント色リスト
+  final Map<String, List<Color>>? eventColors;
+  /// 前月のイベントデータ（隣月セルの薄色表示用）
+  final Map<String, List<Color>>? prevEventColors;
+  /// 次月のイベントデータ（隣月セルの薄色表示用）
+  final Map<String, List<Color>>? nextEventColors;
 
   const MonthCalendarCard({
     super.key,
@@ -28,6 +35,9 @@ class MonthCalendarCard extends StatefulWidget {
     this.saturdayColor = const Color(0xFF4488FF),
     this.sundayHolidayColor = const Color(0xFFFF4444),
     this.googleCalendarEnabled = false,
+    this.eventColors,
+    this.prevEventColors,
+    this.nextEventColors,
   });
 
   @override
@@ -42,12 +52,6 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
   List<CalendarCell> _cells = [];
   bool _loading = true;
   int _rowCount = 5; // 5行 or 6行（月によって変わる）
-  /// 当月の日付文字列（yyyy-MM-dd）→ イベント色リスト
-  Map<String, List<Color>> _eventColors = {};
-  /// 前月の日付文字列（yyyy-MM-dd）→ イベント色リスト（薄色用）
-  Map<String, List<Color>> _prevEventColors = {};
-  /// 次月の日付文字列（yyyy-MM-dd）→ イベント色リスト（薄色用）
-  Map<String, List<Color>> _nextEventColors = {};
 
   @override
   void initState() {
@@ -64,10 +68,6 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
         oldWidget.saturdayColor != widget.saturdayColor ||
         oldWidget.sundayHolidayColor != widget.sundayHolidayColor) {
       _loadCells();
-    }
-    // Googleカレンダー連携のオン/オフが変わった場合もリロード
-    if (oldWidget.googleCalendarEnabled != widget.googleCalendarEnabled) {
-      _loadEvents();
     }
   }
 
@@ -93,38 +93,6 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
         _cells = cells;
         _rowCount = rowCount;
         _loading = false;
-      });
-    }
-    // セル読み込み後にイベントも取得
-    await _loadEvents();
-  }
-
-  Future<void> _loadEvents() async {
-    if (!widget.googleCalendarEnabled || !_googleCalendarService.isSignedIn) {
-      if (mounted) {
-        setState(() {
-          _eventColors = {};
-          _prevEventColors = {};
-          _nextEventColors = {};
-        });
-      }
-      return;
-    }
-
-    // 当月・前月・次月を並行取得
-    final prevMonth = DateTime(widget.year, widget.month - 1);
-    final nextMonth = DateTime(widget.year, widget.month + 1);
-    final results = await Future.wait([
-      _googleCalendarService.fetchEventsForMonth(widget.year, widget.month),
-      _googleCalendarService.fetchEventsForMonth(prevMonth.year, prevMonth.month),
-      _googleCalendarService.fetchEventsForMonth(nextMonth.year, nextMonth.month),
-    ]);
-
-    if (mounted) {
-      setState(() {
-        _eventColors = results[0];
-        _prevEventColors = results[1];
-        _nextEventColors = results[2];
       });
     }
   }
@@ -212,6 +180,12 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
     // _rowCount行×7列（5行=35セル or 6行=42セル）
     final totalCells = _rowCount * 7;
     final rows = <Widget>[];
+
+    // propsで渡されたイベントデータを使用（未渡しの場合は空）
+    final currentEvents = widget.eventColors ?? {};
+    final prevEvents = widget.prevEventColors ?? {};
+    final nextEvents = widget.nextEventColors ?? {};
+
     for (int i = 0; i < totalCells; i += 7) {
       final weekCells = _cells.sublist(i, (i + 7).clamp(0, _cells.length));
 
@@ -230,7 +204,7 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
             List<Color> colors;
             if (isCurrentMonth) {
               // 当月: 通常色
-              colors = _eventColors[_dateKey(cell.date!)] ?? [];
+              colors = currentEvents[_dateKey(cell.date!)] ?? [];
             } else if (isAdjacentWithDate) {
               // 前月・次月: 薄い色で表示
               final key = _dateKey(cell.date!);
@@ -238,8 +212,8 @@ class _MonthCalendarCardState extends State<MonthCalendarCard> {
                   (cell.date!.year < widget.year ||
                       (cell.date!.year == widget.year && cell.date!.month < widget.month));
               final base = isPrev
-                  ? (_prevEventColors[key] ?? [])
-                  : (_nextEventColors[key] ?? []);
+                  ? (prevEvents[key] ?? [])
+                  : (nextEvents[key] ?? []);
               // 透明度 40% で薄くする
               colors = base.map((c) => c.withValues(alpha: 0.4)).toList();
             } else {

@@ -133,7 +133,9 @@ class GoogleCalendarService {
     final organizerEmail = event.organizer?.email ?? '';
     if (organizerEmail.contains('#contacts@group')) return true;
     if (organizerEmail.contains('calendar.google.com') &&
-        organizerEmail.contains('birthday')) return true;
+        organizerEmail.contains('birthday')) {
+      return true;
+    }
     // カレンダーID で除外
     // （primary カレンダーのイベントだが念のため）
     return false;

@@ -5,8 +5,10 @@ class AppSettings {
   final Color backgroundColor;
   final bool startOnMonday;
   final double backgroundOpacity;
+
   /// 土曜日の文字色
   final Color saturdayColor;
+
   /// 日曜・祝日の文字色
   final Color sundayHolidayColor;
 
@@ -44,13 +46,24 @@ class AppSettings {
   static const String _saturdayColorKey = 'saturday_color';
   static const String _sundayHolidayColorKey = 'sunday_holiday_color';
 
+  // Googleカレンダー/タスクの月別キャッシュ保存先キー
+  static const String googleEventCacheKeyPrefix = 'google_event_cache_';
+  static const String googleEventCacheDateKeyPrefix =
+      'google_event_cache_date_';
+
   Future<void> save() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_bgColorKey, backgroundColor.toARGB32().toSigned(32));
     await prefs.setBool(_startOnMondayKey, startOnMonday);
     await prefs.setDouble(_bgOpacityKey, backgroundOpacity);
-    await prefs.setInt(_saturdayColorKey, saturdayColor.toARGB32().toSigned(32));
-    await prefs.setInt(_sundayHolidayColorKey, sundayHolidayColor.toARGB32().toSigned(32));
+    await prefs.setInt(
+      _saturdayColorKey,
+      saturdayColor.toARGB32().toSigned(32),
+    );
+    await prefs.setInt(
+      _sundayHolidayColorKey,
+      sundayHolidayColor.toARGB32().toSigned(32),
+    );
   }
 
   static Future<AppSettings> load() async {
@@ -64,9 +77,12 @@ class AppSettings {
       backgroundColor: bgColorInt != null ? Color(bgColorInt) : Colors.black,
       startOnMonday: startOnMonday,
       backgroundOpacity: bgOpacity,
-      saturdayColor: satColorInt != null ? Color(satColorInt) : const Color(0xFF4488FF),
-      sundayHolidayColor: sunHolColorInt != null ? Color(sunHolColorInt) : const Color(0xFFFF4444),
+      saturdayColor: satColorInt != null
+          ? Color(satColorInt)
+          : const Color(0xFF4488FF),
+      sundayHolidayColor: sunHolColorInt != null
+          ? Color(sunHolColorInt)
+          : const Color(0xFFFF4444),
     );
   }
 }
-

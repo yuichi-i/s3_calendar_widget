@@ -156,6 +156,17 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     }
   }
 
+  /// 表示月の前後バッファ込み取得対象を作る
+  List<DateTime> _buildExtendedFetchMonths() {
+    final oldest = _months.first;
+    final newest = _months.last;
+    final fetchMonths = _generateMonths(
+      DateTime(oldest.year, oldest.month - 1),
+      _months.length + 2,
+    );
+    return [...fetchMonths, DateTime(newest.year, newest.month + 1)];
+  }
+
   /// 現在表示中の月リスト全体（前後1ヶ月バッファ含む）のイベントを一括取得する
   Future<void> _loadEventsForVisibleRange() async {
     if (_loadingEvents) return;
@@ -163,32 +174,33 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
 
     setState(() => _loadingEvents = true);
 
-    // 表示月の前後1ヶ月を含めて取得（隣月セルの薄色表示のため）
-    final oldest = _months.first;
-    final newest = _months.last;
-    final fetchMonths = _generateMonths(
-      DateTime(oldest.year, oldest.month - 1),
-      _months.length + 2,
-    );
-    // 最後月も+1ヶ月まで含める
-    final extendedFetch = [
-      ...fetchMonths,
-      DateTime(newest.year, newest.month + 1),
-    ];
+    final extendedFetch = _buildExtendedFetchMonths();
 
-    final result = await _googleCalendarService.fetchEventsForMonths(
+    // まず永続キャッシュを即時反映して表示ラグを減らす
+    final cached = await _googleCalendarService.getCachedEventsForMonths(
       extendedFetch,
+    );
+    if (mounted && cached.isNotEmpty) {
+      setState(() {
+        _allEventData = {..._allEventData, ...cached};
+      });
+    }
+
+    // 続けて最新データを再取得して上書きする
+    final fresh = await _googleCalendarService.fetchEventsForMonths(
+      extendedFetch,
+      forceRefresh: true,
     );
 
     if (mounted) {
       setState(() {
-        _allEventData = {..._allEventData, ...result};
+        _allEventData = {..._allEventData, ...fresh};
         _loadingEvents = false;
       });
     }
   }
 
-  /// 追加された月分のイベントを取得する（既存キャッシュと差分のみ）
+  /// 追加された月分のイベントを取得する（永続キャッシュ先出し + 再取得）
   Future<void> _loadEventsForNewMonths(List<DateTime> newMonths) async {
     if (!_googleCalendarService.isSignedIn) return;
 
@@ -199,14 +211,25 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       withBuffer.add(m);
       withBuffer.add(DateTime(m.year, m.month + 1));
     }
-    // 重複除去
     final unique = withBuffer.toSet().toList();
 
-    final result = await _googleCalendarService.fetchEventsForMonths(unique);
+    final cached = await _googleCalendarService.getCachedEventsForMonths(
+      unique,
+    );
+    if (mounted && cached.isNotEmpty) {
+      setState(() {
+        _allEventData = {..._allEventData, ...cached};
+      });
+    }
+
+    final fresh = await _googleCalendarService.fetchEventsForMonths(
+      unique,
+      forceRefresh: true,
+    );
 
     if (mounted) {
       setState(() {
-        _allEventData = {..._allEventData, ...result};
+        _allEventData = {..._allEventData, ...fresh};
       });
     }
   }

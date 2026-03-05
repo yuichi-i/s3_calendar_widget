@@ -77,9 +77,46 @@ jobs:
         run: flutter pub get
 
       - name: copy google-service
+        shell: bash
         env:
           GOOGLE_SERVICE: ${{ secrets.GOOGLE_SERVICE_JSON }}
-        run: echo $GOOGLE_SERVICE | base64 --decode --ignore-garbage > android/app/google-services.json
+        run: |
+          if [ -z "$GOOGLE_SERVICE" ]; then
+            echo "GOOGLE_SERVICE_JSON が未設定です" >&2
+            exit 1
+          fi
+          printf '%s' "$GOOGLE_SERVICE" | base64 --decode > android/app/google-services.json
+          test -s android/app/google-services.json
+
+      - name: Restore Android release keystore
+        shell: bash
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "ANDROID_RELEASE_KEYSTORE_BASE64 が未設定です" >&2
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > android/app/upload-keystore.jks
+          test -s android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        shell: bash
+        env:
+          STORE_PASSWORD: ${{ secrets.ANDROID_RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        run: |
+          if [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "release署名用Secretsが不足しています" >&2
+            exit 1
+          fi
+          cat > android/key.properties <<EOF
+          storeFile=app/upload-keystore.jks
+          storePassword=${STORE_PASSWORD}
+          keyAlias=${KEY_ALIAS}
+          keyPassword=${KEY_PASSWORD}
+          EOF
 
       - name: Build APK
         id: build_apk
@@ -118,4 +155,3 @@ jobs:
             actor: ${{ github.actor }}
             sha: ${{ github.sha }}
             run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-

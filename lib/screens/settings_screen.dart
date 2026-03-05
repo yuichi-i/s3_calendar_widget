@@ -105,7 +105,10 @@ class SettingsScreen extends StatelessWidget {
               Card(
                 color: Colors.grey[900],
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Column(
                     children: [
                       Row(
@@ -141,7 +144,8 @@ class SettingsScreen extends StatelessWidget {
                               divisions: 20,
                               activeColor: Colors.white70,
                               inactiveColor: Colors.white24,
-                              onChanged: (v) => provider.setBackgroundOpacity(v),
+                              onChanged: (v) =>
+                                  provider.setBackgroundOpacity(v),
                             ),
                           ),
                           SizedBox(
@@ -160,12 +164,20 @@ class SettingsScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('完全透明',
-                              style: GoogleFonts.rajdhani(
-                                  color: Colors.white38, fontSize: 11)),
-                          Text('不透明',
-                              style: GoogleFonts.rajdhani(
-                                  color: Colors.white38, fontSize: 11)),
+                          Text(
+                            '完全透明',
+                            style: GoogleFonts.rajdhani(
+                              color: Colors.white38,
+                              fontSize: 11,
+                            ),
+                          ),
+                          Text(
+                            '不透明',
+                            style: GoogleFonts.rajdhani(
+                              color: Colors.white38,
+                              fontSize: 11,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -174,12 +186,12 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // 土曜日の文字色設定
-              _SectionHeader(title: '土曜日の文字色'),
+              _SectionHeader(title: '土曜日の文字色（ウィジェット）'),
               Card(
                 color: Colors.grey[900],
                 child: ListTile(
                   title: Text(
-                    '土曜日の色を選択',
+                    '土曜日の色を選択（ウィジェット）',
                     style: GoogleFonts.rajdhani(color: Colors.white),
                   ),
                   trailing: Row(
@@ -203,12 +215,12 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // 日曜・祝日の文字色設定
-              _SectionHeader(title: '日曜日・祝日の文字色'),
+              _SectionHeader(title: '日曜日・祝日の文字色（ウィジェット）'),
               Card(
                 color: Colors.grey[900],
                 child: ListTile(
                   title: Text(
-                    '日曜日・祝日の色を選択',
+                    '日曜日・祝日の色を選択（ウィジェット）',
                     style: GoogleFonts.rajdhani(color: Colors.white),
                   ),
                   trailing: Row(
@@ -232,7 +244,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               // 色の凡例
-              _SectionHeader(title: '色の凡例'),
+              _SectionHeader(title: '色の凡例（ウィジェット）'),
               Card(
                 color: Colors.grey[900],
                 child: Padding(
@@ -240,10 +252,14 @@ class SettingsScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       _ColorLegendRow(
-                          color: provider.sundayHolidayColor, label: '日曜日・祝日'),
+                        color: provider.sundayHolidayColor,
+                        label: '日曜日・祝日',
+                      ),
                       const SizedBox(height: 8),
                       _ColorLegendRow(
-                          color: provider.saturdayColor, label: '土曜日'),
+                        color: provider.saturdayColor,
+                        label: '土曜日',
+                      ),
                       const SizedBox(height: 8),
                       _ColorLegendRow(color: Colors.white, label: '平日'),
                     ],
@@ -280,10 +296,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Colors.grey[900],
-        title: Text(
-          '背景色を選択',
-          style: GoogleFonts.rajdhani(color: Colors.white),
-        ),
+        title: Text('背景色を選択', style: GoogleFonts.rajdhani(color: Colors.white)),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickedColor,
@@ -296,8 +309,10 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('キャンセル',
-                style: GoogleFonts.rajdhani(color: Colors.white54)),
+            child: Text(
+              'キャンセル',
+              style: GoogleFonts.rajdhani(color: Colors.white54),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
@@ -312,7 +327,10 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showSaturdayColorPicker(BuildContext context, SettingsProvider provider) {
+  void _showSaturdayColorPicker(
+    BuildContext context,
+    SettingsProvider provider,
+  ) {
     Color pickedColor = provider.saturdayColor;
     showDialog(
       context: context,
@@ -334,8 +352,10 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('キャンセル',
-                style: GoogleFonts.rajdhani(color: Colors.white54)),
+            child: Text(
+              'キャンセル',
+              style: GoogleFonts.rajdhani(color: Colors.white54),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
@@ -350,7 +370,10 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showSundayHolidayColorPicker(BuildContext context, SettingsProvider provider) {
+  void _showSundayHolidayColorPicker(
+    BuildContext context,
+    SettingsProvider provider,
+  ) {
     Color pickedColor = provider.sundayHolidayColor;
     showDialog(
       context: context,
@@ -372,8 +395,10 @@ class SettingsScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('キャンセル',
-                style: GoogleFonts.rajdhani(color: Colors.white54)),
+            child: Text(
+              'キャンセル',
+              style: GoogleFonts.rajdhani(color: Colors.white54),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.white24),
@@ -427,10 +452,7 @@ class _ColorLegendRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Text(
-          label,
-          style: GoogleFonts.rajdhani(color: Colors.white),
-        ),
+        Text(label, style: GoogleFonts.rajdhani(color: Colors.white)),
       ],
     );
   }
@@ -445,7 +467,8 @@ class _CheckerPainter extends CustomPainter {
     final dark = Paint()..color = const Color(0xFF888888);
     for (double y = 0; y < size.height; y += cellSize) {
       for (double x = 0; x < size.width; x += cellSize) {
-        final isLight = ((x / cellSize).floor() + (y / cellSize).floor()) % 2 == 0;
+        final isLight =
+            ((x / cellSize).floor() + (y / cellSize).floor()) % 2 == 0;
         canvas.drawRect(
           Rect.fromLTWH(x, y, cellSize, cellSize),
           isLight ? light : dark,
@@ -485,9 +508,7 @@ class _GoogleCalendarCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    isSignedIn
-                        ? '連携中: $email'
-                        : '未連携',
+                    isSignedIn ? '連携中: $email' : '未連携',
                     style: GoogleFonts.rajdhani(
                       color: isSignedIn ? Colors.greenAccent : Colors.white54,
                       fontSize: 14,
@@ -501,10 +522,7 @@ class _GoogleCalendarCard extends StatelessWidget {
               isSignedIn
                   ? 'カレンダーの予定が日付の下に●で表示されます。\n日付をタップするとGoogleカレンダーが開きます。'
                   : 'Googleアカウントでサインインすると、アプリ画面のカレンダーに予定を表示できます。',
-              style: GoogleFonts.rajdhani(
-                color: Colors.white54,
-                fontSize: 12,
-              ),
+              style: GoogleFonts.rajdhani(color: Colors.white54, fontSize: 12),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -514,7 +532,11 @@ class _GoogleCalendarCard extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.white24),
                       ),
-                      icon: const Icon(Icons.logout, size: 16, color: Colors.white54),
+                      icon: const Icon(
+                        Icons.logout,
+                        size: 16,
+                        color: Colors.white54,
+                      ),
                       label: Text(
                         'サインアウト',
                         style: GoogleFonts.rajdhani(color: Colors.white54),
@@ -525,7 +547,11 @@ class _GoogleCalendarCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4285F4),
                       ),
-                      icon: const Icon(Icons.login, size: 16, color: Colors.white),
+                      icon: const Icon(
+                        Icons.login,
+                        size: 16,
+                        color: Colors.white,
+                      ),
                       label: Text(
                         'Google アカウントでサインイン',
                         style: GoogleFonts.rajdhani(color: Colors.white),
@@ -559,7 +585,8 @@ class _BatteryOptimizationCard extends StatefulWidget {
   const _BatteryOptimizationCard();
 
   @override
-  State<_BatteryOptimizationCard> createState() => _BatteryOptimizationCardState();
+  State<_BatteryOptimizationCard> createState() =>
+      _BatteryOptimizationCardState();
 }
 
 class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
@@ -573,7 +600,9 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
 
   Future<void> _checkStatus() async {
     try {
-      final result = await _batteryChannel.invokeMethod<bool>('isIgnoringBatteryOptimizations');
+      final result = await _batteryChannel.invokeMethod<bool>(
+        'isIgnoringBatteryOptimizations',
+      );
       if (mounted) setState(() => _isIgnoring = result ?? false);
     } catch (_) {
       if (mounted) setState(() => _isIgnoring = null);
@@ -583,7 +612,8 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
   @override
   Widget build(BuildContext context) {
     // 状態不明（Android以外など）またはOKの場合は非表示
-    if (_isIgnoring == null || _isIgnoring == true) return const SizedBox.shrink();
+    if (_isIgnoring == null || _isIgnoring == true)
+      return const SizedBox.shrink();
 
     return Card(
       color: Colors.orange[900]?.withValues(alpha: 0.6),
@@ -594,11 +624,7 @@ class _BatteryOptimizationCardState extends State<_BatteryOptimizationCard> {
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.battery_alert,
-                  color: Colors.orange,
-                  size: 20,
-                ),
+                const Icon(Icons.battery_alert, color: Colors.orange, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'ウィジェット自動更新',

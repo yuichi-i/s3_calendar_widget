@@ -25,6 +25,11 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
   final CalendarService _calendarService = CalendarService();
   final GoogleCalendarService _googleCalendarService = GoogleCalendarService();
 
+  // アプリ側カレンダー一覧は常にデフォルト配色で固定
+  static const Color _appListBackgroundColor = Colors.black;
+  static const Color _appListSaturdayColor = Color(0xFF4488FF);
+  static const Color _appListSundayHolidayColor = Color(0xFFFF4444);
+
   // 表示する月のリスト（過去→現在→未来）
   late List<DateTime> _months;
   late ScrollController _scrollController;
@@ -75,6 +80,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
           _loadEventsForVisibleRange();
         }
       }
+
       if (provider.settings.backgroundColor != const Color(0xFF000000) ||
           provider.startOnMonday) {
         _updateWidget();
@@ -112,8 +118,14 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     if (!_scrollController.hasClients) return;
     final pos = _scrollController.position;
 
-    final topOverscroll = (pos.minScrollExtent - pos.pixels).clamp(0.0, double.infinity);
-    final bottomOverscroll = (pos.pixels - pos.maxScrollExtent).clamp(0.0, double.infinity);
+    final topOverscroll = (pos.minScrollExtent - pos.pixels).clamp(
+      0.0,
+      double.infinity,
+    );
+    final bottomOverscroll = (pos.pixels - pos.maxScrollExtent).clamp(
+      0.0,
+      double.infinity,
+    );
     final isPullingDown = pos.userScrollDirection == ScrollDirection.forward;
     final isPullingUp = pos.userScrollDirection == ScrollDirection.reverse;
 
@@ -159,9 +171,14 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       _months.length + 2,
     );
     // 最後月も+1ヶ月まで含める
-    final extendedFetch = [...fetchMonths, DateTime(newest.year, newest.month + 1)];
+    final extendedFetch = [
+      ...fetchMonths,
+      DateTime(newest.year, newest.month + 1),
+    ];
 
-    final result = await _googleCalendarService.fetchEventsForMonths(extendedFetch);
+    final result = await _googleCalendarService.fetchEventsForMonths(
+      extendedFetch,
+    );
 
     if (mounted) {
       setState(() {
@@ -204,7 +221,8 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
     const spacing = 8.0;
     const crossAxisCount = 2;
     final cellWidth =
-        (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
+        (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) /
+        crossAxisCount;
 
     // 先頭クッションバナーの高さ + SliverPadding の top
     const bannerHeight = 48.0;
@@ -221,7 +239,10 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
         final rows = _calendarService.getRowCount(
           year: m.year,
           month: m.month,
-          startOnMonday: Provider.of<SettingsProvider>(context, listen: false).startOnMonday,
+          startOnMonday: Provider.of<SettingsProvider>(
+            context,
+            listen: false,
+          ).startOnMonday,
         );
         final ratio = rows == 6 ? 0.70 : 0.78;
         final h = cellWidth / ratio;
@@ -266,12 +287,15 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       const spacing = 8.0;
       const crossAxisCount = 2;
       final cellWidth =
-          (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) / crossAxisCount;
+          (screenWidth - hPadding * 2 - spacing * (crossAxisCount - 1)) /
+          crossAxisCount;
 
       // 追加した月の合計高さを計算（2列グリッドなのでペアごとに最大値）
       double addedHeight = 0;
-      final startOnMonday =
-          Provider.of<SettingsProvider>(context, listen: false).startOnMonday;
+      final startOnMonday = Provider.of<SettingsProvider>(
+        context,
+        listen: false,
+      ).startOnMonday;
       for (int i = 0; i < newMonths.length; i += crossAxisCount) {
         final leftM = i < newMonths.length ? newMonths[i] : null;
         final rightM = i + 1 < newMonths.length ? newMonths[i + 1] : null;
@@ -293,7 +317,9 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       // 補正後の位置にジャンプ（ちらつきを防ぐため jumpTo を使用）
       _scrollController.jumpTo(
         (currentOffset + addedHeight).clamp(
-            0.0, _scrollController.position.maxScrollExtent),
+          0.0,
+          _scrollController.position.maxScrollExtent,
+        ),
       );
     });
 
@@ -328,8 +354,10 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
   }
 
   Future<void> _updateWidget() async {
-    final settings =
-        Provider.of<SettingsProvider>(context, listen: false).settings;
+    final settings = Provider.of<SettingsProvider>(
+      context,
+      listen: false,
+    ).settings;
     await _widgetUpdateService.updateCalendarWidget(settings: settings);
   }
 
@@ -337,7 +365,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
   Widget build(BuildContext context) {
     return Consumer<SettingsProvider>(
       builder: (context, settingsProvider, _) {
-        final settings = settingsProvider.settings;
+        final startOnMonday = settingsProvider.startOnMonday;
 
         // Googleカレンダー連携のオン/オフが変わった場合にイベントを再取得
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -369,9 +397,7 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
                 onPressed: () async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const SettingsScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const SettingsScreen()),
                   );
                   // 設定変更後にウィジェット更新
                   await _updateWidget();
@@ -386,10 +412,10 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
             ],
           ),
           body: _buildCalendarList(
-            settings.backgroundColor,
-            settings.startOnMonday,
-            settings.saturdayColor,
-            settings.sundayHolidayColor,
+            _appListBackgroundColor,
+            startOnMonday,
+            _appListSaturdayColor,
+            _appListSundayHolidayColor,
             settingsProvider.googleCalendarEnabled,
           ),
         );
@@ -411,7 +437,9 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
       key: _scrollViewKey,
       controller: _scrollController,
       // AndroidでもiOS風のバウンド挙動で追加読み込みトリガーを統一する
-      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+      physics: const BouncingScrollPhysics(
+        parent: AlwaysScrollableScrollPhysics(),
+      ),
       slivers: [
         // ── 先頭クッション ──────────────────────────────
         SliverToBoxAdapter(
@@ -430,53 +458,47 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
               startOnMonday: startOnMonday,
               calendarService: _calendarService,
             ),
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                final month = _months[index];
-                final isCurrentMonth =
-                    month.year == now.year && month.month == now.month;
+            delegate: SliverChildBuilderDelegate((context, index) {
+              final month = _months[index];
+              final isCurrentMonth =
+                  month.year == now.year && month.month == now.month;
 
-                // イベントデータをキャッシュから取得
-                final currentKey = '${month.year}-${month.month}';
-                final prevMonth = DateTime(month.year, month.month - 1);
-                final nextMonth = DateTime(month.year, month.month + 1);
-                final prevKey = '${prevMonth.year}-${prevMonth.month}';
-                final nextKey = '${nextMonth.year}-${nextMonth.month}';
+              // イベントデータをキャッシュから取得
+              final currentKey = '${month.year}-${month.month}';
+              final prevMonth = DateTime(month.year, month.month - 1);
+              final nextMonth = DateTime(month.year, month.month + 1);
+              final prevKey = '${prevMonth.year}-${prevMonth.month}';
+              final nextKey = '${nextMonth.year}-${nextMonth.month}';
 
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  decoration: isCurrentMonth
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Colors.white38,
-                            width: 1.5,
-                          ),
-                        )
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                decoration: isCurrentMonth
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.white38, width: 1.5),
+                      )
+                    : null,
+                child: MonthCalendarCard(
+                  key: ValueKey(currentKey),
+                  year: month.year,
+                  month: month.month,
+                  startOnMonday: startOnMonday,
+                  backgroundColor: bgColor,
+                  saturdayColor: saturdayColor,
+                  sundayHolidayColor: sundayHolidayColor,
+                  googleCalendarEnabled: googleCalendarEnabled,
+                  eventColors: googleCalendarEnabled
+                      ? _allEventData[currentKey]
                       : null,
-                  child: MonthCalendarCard(
-                    key: ValueKey(currentKey),
-                    year: month.year,
-                    month: month.month,
-                    startOnMonday: startOnMonday,
-                    backgroundColor: bgColor,
-                    saturdayColor: saturdayColor,
-                    sundayHolidayColor: sundayHolidayColor,
-                    googleCalendarEnabled: googleCalendarEnabled,
-                    eventColors: googleCalendarEnabled
-                        ? _allEventData[currentKey]
-                        : null,
-                    prevEventColors: googleCalendarEnabled
-                        ? _allEventData[prevKey]
-                        : null,
-                    nextEventColors: googleCalendarEnabled
-                        ? _allEventData[nextKey]
-                        : null,
-                  ),
-                );
-              },
-              childCount: _months.length,
-            ),
+                  prevEventColors: googleCalendarEnabled
+                      ? _allEventData[prevKey]
+                      : null,
+                  nextEventColors: googleCalendarEnabled
+                      ? _allEventData[nextKey]
+                      : null,
+                ),
+              );
+            }, childCount: _months.length),
           ),
         ),
         // ── 末尾クッション ──────────────────────────────
@@ -523,14 +545,15 @@ class _LoadMoreBanner extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.expand_more, color: Colors.white38, size: 18),
+                  const Icon(
+                    Icons.expand_more,
+                    color: Colors.white38,
+                    size: 18,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     label,
-                    style: const TextStyle(
-                      color: Colors.white38,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.white38, fontSize: 12),
                   ),
                 ],
               ),
@@ -563,7 +586,7 @@ class _MonthGridDelegate extends SliverGridDelegate {
     const padding = 0.0; // SliverPadding で制御するため0
     final cellWidth =
         (constraints.crossAxisExtent - spacing * (crossAxisCount - 1)) /
-            crossAxisCount;
+        crossAxisCount;
 
     // 月ごとの高さをリスト化
     final heights = List<double>.generate(months.length, (i) {
@@ -655,7 +678,8 @@ class _MonthGridLayout extends SliverGridLayout {
   @override
   int getMinChildIndexForScrollOffset(double scrollOffset) {
     for (int i = 0; i < _offsets.length; i += crossAxisCount) {
-      if (_offsets[i] > scrollOffset) return (i - crossAxisCount).clamp(0, _offsets.length - 1);
+      if (_offsets[i] > scrollOffset)
+        return (i - crossAxisCount).clamp(0, _offsets.length - 1);
     }
     return (_offsets.length - crossAxisCount).clamp(0, _offsets.length - 1);
   }
@@ -663,9 +687,9 @@ class _MonthGridLayout extends SliverGridLayout {
   @override
   int getMaxChildIndexForScrollOffset(double scrollOffset) {
     for (int i = 0; i < _offsets.length; i += crossAxisCount) {
-      if (_offsets[i] > scrollOffset) return (i + crossAxisCount - 1).clamp(0, _offsets.length - 1);
+      if (_offsets[i] > scrollOffset)
+        return (i + crossAxisCount - 1).clamp(0, _offsets.length - 1);
     }
     return _offsets.length - 1;
   }
 }
-

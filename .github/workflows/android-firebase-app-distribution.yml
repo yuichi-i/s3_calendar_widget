@@ -112,7 +112,7 @@ jobs:
             exit 1
           fi
           cat > android/key.properties <<EOF
-          storeFile=app/upload-keystore.jks
+          storeFile=upload-keystore.jks
           storePassword=${STORE_PASSWORD}
           keyAlias=${KEY_ALIAS}
           keyPassword=${KEY_PASSWORD}

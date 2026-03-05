@@ -5,6 +5,19 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 
+const List<Color> _eventDotPresetColors = [
+  Color(0xFF00E5FF),
+  Color(0xFFFFEA00),
+  Color(0xFFFF4081),
+  Color(0xFF7C4DFF),
+  Color(0xFF69F0AE),
+  Color(0xFFFF9100),
+  Color(0xFF40C4FF),
+  Color(0xFFFF5252),
+  Color(0xFFB2FF59),
+  Color(0xFFE040FB),
+];
+
 /// バッテリー最適化状態を確認するMethodChannel（設定の起動には使用しない）
 const _batteryChannel = MethodChannel('com.example.s3_calendar_widget/battery');
 
@@ -38,6 +51,46 @@ class SettingsScreen extends StatelessWidget {
               // Google カレンダー連携設定
               _SectionHeader(title: 'Google カレンダー連携'),
               _GoogleCalendarCard(provider: provider),
+              const SizedBox(height: 24),
+              // Googleイベント●色設定
+              _SectionHeader(title: 'Googleイベント●の色'),
+              Card(
+                color: Colors.grey[900],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Column(
+                    children: [
+                      _EventDotColorTile(
+                        title: '1件目',
+                        color: provider.firstEventDotColor,
+                        onTap: () => _showPresetColorPicker(
+                          context,
+                          initialColor: provider.firstEventDotColor,
+                          onSelected: provider.setFirstEventDotColor,
+                        ),
+                      ),
+                      _EventDotColorTile(
+                        title: '2件目',
+                        color: provider.secondEventDotColor,
+                        onTap: () => _showPresetColorPicker(
+                          context,
+                          initialColor: provider.secondEventDotColor,
+                          onSelected: provider.setSecondEventDotColor,
+                        ),
+                      ),
+                      _EventDotColorTile(
+                        title: '3件目',
+                        color: provider.thirdEventDotColor,
+                        onTap: () => _showPresetColorPicker(
+                          context,
+                          initialColor: provider.thirdEventDotColor,
+                          onSelected: provider.setThirdEventDotColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               // 週の始まり設定
               _SectionHeader(title: '週の始まり'),
@@ -191,7 +244,7 @@ class SettingsScreen extends StatelessWidget {
                 color: Colors.grey[900],
                 child: ListTile(
                   title: Text(
-                    '土曜日の色を選択（ウィジェット）',
+                    '土曜日の色を選択',
                     style: GoogleFonts.rajdhani(color: Colors.white),
                   ),
                   trailing: Row(
@@ -220,7 +273,7 @@ class SettingsScreen extends StatelessWidget {
                 color: Colors.grey[900],
                 child: ListTile(
                   title: Text(
-                    '日曜日・祝日の色を選択（ウィジェット）',
+                    '日曜日・祝日の色を選択',
                     style: GoogleFonts.rajdhani(color: Colors.white),
                   ),
                   trailing: Row(
@@ -410,6 +463,103 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _showPresetColorPicker(
+    BuildContext context, {
+    required Color initialColor,
+    required Future<void> Function(Color color) onSelected,
+  }) async {
+    final selected = await showModalBottomSheet<Color>(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '色を選択',
+                style: GoogleFonts.rajdhani(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: _eventDotPresetColors.map((color) {
+                  final isSelected = color.toARGB32() == initialColor.toARGB32();
+                  return InkWell(
+                    borderRadius: BorderRadius.circular(20),
+                    onTap: () => Navigator.pop(ctx, color),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected ? Colors.white : Colors.white24,
+                          width: isSelected ? 2.2 : 1.0,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selected != null) {
+      await onSelected(selected);
+    }
+  }
+}
+
+class _EventDotColorTile extends StatelessWidget {
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _EventDotColorTile({
+    required this.title,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title, style: GoogleFonts.rajdhani(color: Colors.white)),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white38),
+            ),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.chevron_right, color: Colors.white54),
+        ],
+      ),
+      onTap: onTap,
     );
   }
 }

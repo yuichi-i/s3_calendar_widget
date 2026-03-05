@@ -424,11 +424,18 @@ class _CalendarListScreenState extends State<CalendarListScreen> {
                   );
                   // 設定変更後にウィジェット更新
                   await _updateWidget();
-                  // Googleカレンダーが有効になっていればイベントを取得
-                  if (mounted &&
-                      settingsProvider.googleCalendarEnabled &&
-                      _allEventData.isEmpty) {
+                  if (!mounted) return;
+
+                  // ●色などGoogle表示設定の変更を即時反映するため再取得する
+                  if (settingsProvider.googleCalendarEnabled) {
+                    setState(() {
+                      _allEventData = {};
+                    });
                     await _loadEventsForVisibleRange();
+                  } else {
+                    setState(() {
+                      _allEventData = {};
+                    });
                   }
                 },
               ),

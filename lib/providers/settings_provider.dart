@@ -20,6 +20,13 @@ class SettingsProvider extends ChangeNotifier {
   /// 連携中のアカウントメールアドレス
   String? get googleAccountEmail => _googleCalendarService.currentUser?.email;
 
+  /// Googleカレンダー表示の●色（1件目）
+  Color get firstEventDotColor => _settings.firstEventDotColor;
+  /// Googleカレンダー表示の●色（2件目）
+  Color get secondEventDotColor => _settings.secondEventDotColor;
+  /// Googleカレンダー表示の●色（3件目）
+  Color get thirdEventDotColor => _settings.thirdEventDotColor;
+
   Future<void> init() async {
     _settings = await AppSettings.load();
     // アプリ起動時にサインイン状態を復元
@@ -57,9 +64,35 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> setFirstEventDotColor(Color color) async {
+    _settings = _settings.copyWith(firstEventDotColor: color);
+    await _settings.save();
+    // 色変更時はキャッシュを捨てて次回取得で新色を反映する
+    _googleCalendarService.clearCache();
+    notifyListeners();
+  }
+
+  Future<void> setSecondEventDotColor(Color color) async {
+    _settings = _settings.copyWith(secondEventDotColor: color);
+    await _settings.save();
+    // 色変更時はキャッシュを捨てて次回取得で新色を反映する
+    _googleCalendarService.clearCache();
+    notifyListeners();
+  }
+
+  Future<void> setThirdEventDotColor(Color color) async {
+    _settings = _settings.copyWith(thirdEventDotColor: color);
+    await _settings.save();
+    // 色変更時はキャッシュを捨てて次回取得で新色を反映する
+    _googleCalendarService.clearCache();
+    notifyListeners();
+  }
+
   /// Googleカレンダーにサインインする
   Future<bool> signInGoogle() async {
     final account = await _googleCalendarService.signIn();
+    // サインイン直後は前回のインメモリキャッシュを使わない
+    _googleCalendarService.clearCache();
     notifyListeners();
     return account != null;
   }

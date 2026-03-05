@@ -21,8 +21,6 @@ class GoogleCalendarService {
   /// 月ごとのイベントキャッシュ（キー: "yyyy-M"）
   final Map<String, Map<String, List<Color>>> _eventCache = {};
 
-  static const Color _taskDotColor = Color(0xFFAB47BC);
-
   /// Google Sign-In インスタンス（Calendar/Tasks 読み取りスコープを要求）
   final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
@@ -98,6 +96,13 @@ class GoogleCalendarService {
 
     _AuthClient? client;
     try {
+      final settings = await AppSettings.load();
+      final dotColors = <Color>[
+        settings.firstEventDotColor,
+        settings.secondEventDotColor,
+        settings.thirdEventDotColor,
+      ];
+
       final headers = await currentUser!.authHeaders;
       client = _AuthClient(http.Client(), headers);
       final calendarApi = gcal.CalendarApi(client);
@@ -138,7 +143,7 @@ class GoogleCalendarService {
         final key = _dateKey(startDate);
         final list = result.putIfAbsent(key, () => []);
         if (list.length < 3) {
-          list.add(_eventDotColor(list.length));
+          list.add(_eventDotColor(list.length, dotColors));
         }
       }
 
@@ -146,7 +151,7 @@ class GoogleCalendarService {
         final key = _dateKey(date);
         final list = result.putIfAbsent(key, () => []);
         if (list.length < 3) {
-          list.add(_taskDotColor);
+          list.add(_eventDotColor(list.length, dotColors));
         }
       }
 
@@ -376,19 +381,25 @@ class GoogleCalendarService {
     }
   }
 
-  /// 件数順（0始まり）に●の色を返す
-  /// 1件目: Google ブルー、2件目: グリーン、3件目: オレンジ
-  Color _eventDotColor(int index) {
-    switch (index) {
-      case 0:
-        return const Color(0xFF4285F4);
-      case 1:
-        return const Color(0xFF34A853);
-      case 2:
-        return const Color(0xFFFF6D00);
-      default:
-        return const Color(0xFF4285F4);
+  /// 件数順（0始まり）の●色を返す
+  /// 設定値が不足しても安全に既定色へフォールバックする
+  Color _eventDotColor(int index, List<Color> dotColors) {
+    if (dotColors.isEmpty) {
+      switch (index) {
+        case 0:
+          return const Color(0xFF00E5FF);
+        case 1:
+          return const Color(0xFFFFEA00);
+        case 2:
+          return const Color(0xFFFF4081);
+        default:
+          return const Color(0xFF00E5FF);
+      }
     }
+    final safeIndex = index < 0
+        ? 0
+        : (index >= dotColors.length ? dotColors.length - 1 : index);
+    return dotColors[safeIndex];
   }
 
   /// 指定日付を Google カレンダーアプリで開く
